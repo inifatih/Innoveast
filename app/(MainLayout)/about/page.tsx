@@ -3,7 +3,7 @@
 import AutoBreadcrumb from "@/components/AutoBreadcrumb";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 
 type SectionKey = "who" | "what" | "why" | "stand" | "journey";
 
@@ -51,16 +51,13 @@ export default function AboutPage() {
   useEffect(() => {
     const section = searchParams.get("section") as SectionKey | null;
     if (section && keys.includes(section)) {
-      setTimeout(() => {
+      startTransition(() => {
         setFade(false);
-        setTimeout(() => {
-          setActive(section);
-          setTimeout(() => setFade(true), 120);
-        }, 0);
-      }, 0);
+        setActive(section);
+        setTimeout(() => setFade(true), 120);
+      });
     }
-  }, [searchParams]);
-
+  }, [searchParams, keys]);
 
   useEffect(() => {
     const index = keys.indexOf(active);
@@ -161,7 +158,7 @@ export default function AboutPage() {
             </div>
 
             <div>
-              <img
+              <Image
                 src={sections[active].image}
                 alt={sections[active].title}
                 className={`rounded-xl shadow-md object-cover w-full h-[400px] transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}`}
@@ -198,7 +195,7 @@ export default function AboutPage() {
                       </p>
                     </div>
                     <div className="flex-1">
-                      <img
+                      <Image
                         src={sections[key].image}
                         alt={sections[key].title}
                         className="rounded-xl shadow-lg object-cover w-full h-[250px] animate-slideUp"
