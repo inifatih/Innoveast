@@ -76,7 +76,6 @@ export default function Navbar() {
 
   // ===== DETECT SCROLL =====
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true); // NEW: mark as mounted
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
@@ -98,7 +97,6 @@ export default function Navbar() {
           Innoveast
         </Link>
 
-        {/* ===== MOBILE NAVIGATION ===== */}
         {/* ===== MOBILE NAVIGATION ===== */}
         {isMobile ? (
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
