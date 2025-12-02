@@ -11,7 +11,7 @@ const upcomingEvents = [
     title: "Temu Bisnis BRIDA JATIM 2026",
     date: "15 June 2026",
     location: "Surabaya, Indonesia",
-    href: "/events/Temubisnis",
+    href: "events/TemuBisnis",
     image: "/images/Event1.jpg",
   },
   {

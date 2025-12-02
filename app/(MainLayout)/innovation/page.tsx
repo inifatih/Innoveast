@@ -1,23 +1,13 @@
 "use client";
 
+import { getPublicInnovations } from "@/app/(MainLayout)/innovation/action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-// Mock data
-const mockData = [
-  { id: 1, title: "AI Assistant", desc: "Membantu otomatisasi pekerjaan dengan AI.", category: "Technology", image: "/images/Acer1.jpg" },
-  { id: 2, title: "Smart Farming", desc: "Pertanian presisi dengan sensor IoT.", category: "Agriculture", image: "/images/Acer2.jpg" },
-  { id: 3, title: "Solar Energy Grid", desc: "Energi terbarukan berbasis panel surya.", category: "Energy", image: "/images/Acer1.jpg" },
-  { id: 4, title: "FinTech Analytics", desc: "Analitik keuangan untuk UMKM.", category: "Finance", image: "/images/Acer2.jpg" },
-  { id: 5, title: "Urban Mobility", desc: "Transportasi ramah lingkungan di perkotaan.", category: "Transportation", image: "/images/Acer1.jpg" },
-  { id: 6, title: "Healthcare IoT", desc: "Pemantauan kesehatan jarak jauh.", category: "Health", image: "/images/Acer2.jpg" },
-  { id: 7, title: "Eco Packaging", desc: "Kemasan biodegradable ramah lingkungan.", category: "Environment", image: "/images/Acer1.jpg" },
-  { id: 8, title: "Neural Computing", desc: "Pemrosesan data besar dengan jaringan saraf.", category: "Technology", image: "/images/Acer2.jpg" },
-];
-
+// Kategori
 const categories = [
   "All",
   "Technology",
@@ -51,15 +41,52 @@ function ListItem({ title, children, href }: ListItemProps) {
   );
 }
 
+export interface InnovationItem {
+  id: string | number;
+  nama_inovasi: string;
+  deskripsi_inovasi?: string;
+  asal_inovasi?: string;
+  created_at: string;
+  profiles?: { id: string; nama: string } | null;
+
+  // Kolom baru
+  image_url?: string | null;
+}
+
 export default function TechOffersPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [openCat, setOpenCat] = useState(false);
 
-  const filteredData = mockData.filter(
+  // ⬇️ Tambahkan state untuk menampung data dari database
+  const [data, setData] = useState<InnovationItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // ⬇️ Fetch data dari database
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const innovations = await getPublicInnovations();
+      setData(innovations);
+    } catch (err) {
+      console.error("Error fetching innovations:", err);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+  // Filtering
+  const filteredData = data.filter(
     (item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) &&
-      (category === "All" || item.category === category)
+      item.nama_inovasi.toLowerCase().includes(search.toLowerCase()) 
+    // &&
+    //   (category === "All" || item.category === category)
   );
 
   return (
@@ -235,17 +262,17 @@ export default function TechOffersPage() {
                 >
                   <div className="relative w-full h-56">
                     <Image
-                      src={item.image}
-                      alt={item.title}
+                      src={item.image_url || "/images/default.jpg"}
+                      alt={item.nama_inovasi}
                       fill
                       className="object-cover"
                     />
                   </div>
 
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-                    <p className="text-sm text-gray-500 mb-2">{item.category}</p>
-                    <p className="text-gray-700 text-sm">{item.desc}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">{item.nama_inovasi}</h3>
+                    {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
+                    <p className="text-gray-700 text-sm">{item.deskripsi_inovasi}</p>
                   </div>
                 </Link>
               ))

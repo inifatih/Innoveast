@@ -4,20 +4,9 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-
-// ================= MOCK DATA =================
-const mockData = [
-  { id: 1, title: "AI Assistant", desc: "AI-based automation system.", category: "Technology", image: "/images/Acer1.jpg" },
-  { id: 2, title: "Smart Farming", desc: "IoT-based precision farming.", category: "Agriculture", image: "/images/Acer2.jpg" },
-  { id: 3, title: "Solar Energy Grid", desc: "Solar renewable system.", category: "Energy", image: "/images/Acer1.jpg" },
-  { id: 4, title: "FinTech Analytics", desc: "Analitik keuangan untuk UMKM.", category: "Finance", image: "/images/Acer2.jpg" },
-  { id: 5, title: "Urban Mobility", desc: "Transportasi ramah lingkungan di perkotaan.", category: "Transportation", image: "/images/Acer1.jpg" },
-  { id: 6, title: "Healthcare IoT", desc: "Pemantauan kesehatan jarak jauh.", category: "Health", image: "/images/Acer2.jpg" },
-  { id: 7, title: "Eco Packaging", desc: "Kemasan biodegradable ramah lingkungan.", category: "Environment", image: "/images/Acer1.jpg" },
-  { id: 8, title: "Neural Computing", desc: "Pemrosesan data besar dengan jaringan saraf.", category: "Technology", image: "/images/Acer2.jpg" },
-];
+import { getPublicInnovations } from "../action";
 
 type DetailBlockProps = {
   title: string;
@@ -44,13 +33,40 @@ interface SidebarInfoProps {
   badgeGreen?: boolean;
 }
 
+export interface InnovationItem {
+  id: string | number;
+  nama_inovasi: string;
+  deskripsi_inovasi?: string;
+  asal_inovasi?: string;
+  created_at: string;
+  profiles?: { id: string; nama: string } | null;
+
+  // Kolom baru
+  image_url?: string | null;
+}
+
 export default function InnovationDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
-  const item = mockData.find((x) => x.id === Number(id));
-  const relatedInnovations = mockData.filter((x) => x.id !== Number(id)).slice(0, 3);
+  const [innovations, setInnovations] = useState<InnovationItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getPublicInnovations();
+        setInnovations(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // ================= GALLERY AUTO-SLIDE =================
   useEffect(() => {
@@ -81,42 +97,66 @@ export default function InnovationDetailPage() {
     slider.setAttribute("data-index", String(next));
   };
 
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-500 text-lg">Loading innovation data...</p>
+      </main>
+    );
+  }
+
+  const item = innovations.find((x) => x.id === Number(id));
+  const relatedInnovations = innovations.filter((x) => x.id !== Number(id)).slice(0, 3);
+
   if (!item) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-slate-50">
         <p className="text-slate-500 text-lg">Innovation not found.</p>
       </main>
     );
-  }
-
-  return (
+  } return (
     <main className="min-h-screen bg-[#FAF7F2]">
       {/* ================= HERO IMAGE ================= */}
       <section className="relative w-full h-80 sm:h-[420px]">
-        <Image src={item.image} alt={item.title} fill className="object-cover" />
+        {item.image_url && (
+          <Image
+            src={item.image_url}
+            alt={item.nama_inovasi}
+            fill
+            className="object-cover"
+          />
+        )}
       </section>
 
       {/* ================= DETAIL SECTION ================= */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8">{item.title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8">{item.nama_inovasi}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* LEFT CONTENT */}
             <div className="lg:col-span-2 space-y-8">
               {/* Main Photo */}
               <div className="w-full h-[350px] relative rounded-xl overflow-hidden shadow-md">
-                <Image src={item.image} alt={item.title} fill className="object-cover" />
+                {item.image_url && (
+                  <Image
+                    src={item.image_url}
+                    alt={item.nama_inovasi}
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
 
               {/* GALLERY */}
               <h2 className="text-xl font-semibold text-slate-900">Innovation Gallery</h2>
               <div className="relative overflow-hidden rounded-xl shadow-md">
                 <div id="galleryCarousel" data-index="0" className="flex transition-transform duration-700 ease-in-out">
-                  {[item.image, "/images/Acer2.jpg", "/images/Acer1.jpg"].map((img, index) => (
+                  {[item.image_url, "/images/Acer2.jpg", "/images/Acer1.jpg"].map((img, index) => (
                     <div key={index} className="min-w-full px-2">
                       <div className="relative w-full h-60 sm:h-72 lg:h-80 rounded-xl overflow-hidden shadow">
-                        <Image src={img} alt={`Gallery ${index}`} fill className="object-cover" />
+                        <Image src={img || ""} alt={`Gallery ${index}`} fill className="object-cover" />
                       </div>
                     </div>
                   ))}
@@ -128,7 +168,7 @@ export default function InnovationDetailPage() {
 
               {/* DETAILS SECTION */}
               <section className="bg-white rounded-xl p-6 shadow-sm space-y-6">
-                <DetailBlock title="Technology Overview" content={item.desc} />
+                <DetailBlock title="Technology Overview" content={item.deskripsi_inovasi || ""} />
                 <DetailList
                   title="Technology Features & Specifications"
                   items={[
@@ -209,6 +249,8 @@ export default function InnovationDetailPage() {
   );
 }
 
+  
+
 /* ============================================================
    =================== COMPONENTS ============================
    ============================================================ */
@@ -235,12 +277,12 @@ function DetailList({ title, items }: DetailListProps) {
   );
 }
 
-function Sidebar({ item, router }: { item: Item; router: AppRouterInstance}) {
+function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInstance}) {
   return (
     <aside className="space-y-6 md:sticky md:top-24">
       <div className="bg-white rounded-xl p-6 shadow-md">
         <h3 className="text-lg font-semibold text-teal-800 mb-4">Key Information</h3>
-        <SidebarInfo label="Category" value={item.category} badge />
+        {/* <SidebarInfo label="Category" value={item.category} badge /> */}
         <SidebarInfo label="ID Number" value={`INNOV-${item.id}`} />
         <SidebarInfo label="Status" value="✓ Approved Innovation" badgeGreen />
         <SidebarInfo label="TRL" value="TRL 7 - System Prototype" />
@@ -269,7 +311,7 @@ function SidebarInfo({ label, value, badge, badgeGreen }: SidebarInfoProps) {
   );
 }
 
-function RelatedItems({ related, router }: { related: Item[]; router: AppRouterInstance}) {
+function RelatedItems({ related, router }: { related: InnovationItem[]; router: AppRouterInstance }) {
   return (
     <section className="mt-8">
       <h3 className="text-2xl font-bold mb-6 text-slate-900">Related Innovations</h3>
@@ -281,17 +323,20 @@ function RelatedItems({ related, router }: { related: Item[]; router: AppRouterI
             className="cursor-pointer rounded-xl overflow-hidden bg-white shadow-md hover:shadow-lg transition-all duration-500"
           >
             <div className="relative w-full h-56 overflow-hidden rounded-t-xl group">
+              {rel.image_url && (
               <Image
-                src={rel.image}
-                alt={rel.title}
+                src={rel.image_url} // sesuaikan field API
+                alt={rel.nama_inovasi}
                 fill
                 className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
               />
+              )}
+              
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-700"></div>
             </div>
             <div className="p-5">
-              <h4 className="font-semibold text-slate-900 text-lg mb-1">{rel.title}</h4>
-              <p className="text-slate-600 text-sm">{rel.category}</p>
+              <h4 className="font-semibold text-slate-900 text-lg mb-1">{rel.nama_inovasi}</h4>
+              {/* <p className="text-slate-600 text-sm">{rel.category_name}</p> */}
             </div>
           </div>
         ))}
