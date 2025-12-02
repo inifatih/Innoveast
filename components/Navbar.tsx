@@ -99,10 +99,13 @@ export default function Navbar() {
         </Link>
 
         {/* ===== MOBILE NAVIGATION ===== */}
+        {/* ===== MOBILE NAVIGATION ===== */}
         {isMobile ? (
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger>
+              <Button variant="ghost" size="icon">
                 <Menu size={26} />
+              </Button>
             </SheetTrigger>
 
             <SheetContent side="right" className="w-[300px] bg-white">
@@ -154,12 +157,21 @@ export default function Navbar() {
                     <AccordionTrigger>Profile</AccordionTrigger>
                     <AccordionContent>
                       <div className="space-y-2">
-                        <Button variant="ghost" className="w-full justify-start" onClick={() => { setOpenLogin(true); setMobileOpen(false); }}>
-                          Masuk
-                        </Button>
-                        <Button variant="ghost" className="w-full justify-start" onClick={() => { setOpenRegister(true); setMobileOpen(false); }}>
-                          Register
-                        </Button>
+                        {!user ? (
+                          <>
+                            <Button variant="ghost" className="w-full justify-start" onClick={() => setOpenLogin(true)}>Masuk</Button>
+                            <Button variant="ghost" className="w-full justify-start" onClick={() => setOpenRegister(true)}>Register</Button>
+                          </>
+                        ) : (
+                          <>
+                            <Link href="">
+                              <Button variant="ghost" className="w-full justify-start text-left">Saya</Button>
+                            </Link>
+                            <Button variant="ghost" className="w-full justify-start text-left" onClick={handleSignOut}>
+                              Logout
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </AccordionContent>
                   </AccordionItem>
