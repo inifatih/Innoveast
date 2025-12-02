@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 // === Metadata (bisa diubah sesuai proyekmu) ===
 export const metadata: Metadata = {
   title: {
-    default: "Inoshop: Marketplace Inovasi Badan Riset dan Inovasi Daerah Provinsi Jawa Timur",
+    default: "Innoveast: Marketplace Inovasi milik Badan Riset dan Inovasi Daerah Provinsi Jawa Timur",
     template: "%s | Marketplace Inovasi BRIDA Jatim",
   },
   description: "Menawarkan inovasi milik Badan Riset dan Inovasi Daerah (BRIDA) Jawa Timur.",

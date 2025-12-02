@@ -73,14 +73,13 @@ export default function Navbar() {
     window.location.reload();
   };
 
-
   // ===== DETECT SCROLL =====
   useEffect(() => {
     setMounted(true); // NEW: mark as mounted
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    }, []);
 
   return (
     <nav
@@ -100,7 +99,7 @@ export default function Navbar() {
         {/* ===== MOBILE NAVIGATION ===== */}
         {isMobile ? (
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu size={26} />
               </Button>
@@ -111,7 +110,7 @@ export default function Navbar() {
                 <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
               </SheetHeader>
 
-              <div className="mt-4">
+              <div className="m-4">
                 <Accordion type="single" collapsible>
 
                   {/* Marketplace */}
