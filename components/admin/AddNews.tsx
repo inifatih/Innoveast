@@ -27,21 +27,12 @@ const NewsSchema = z.object({
   tanggal_news: z.string(),
   deskripsi_news: z.string().min(1, "Isi deskripsi berita"),
   penulis_news: z.string().min(1, "Isi penulis berita"),
+  image: z.any().optional(),
 });
 
-type NewsFormInput = {
-  judul_news: string;
-  category_news: string;
-  tanggal_news: string;
-  deskripsi_news: string;
-  penulis_news: string;
-};
+type NewsFormInput = z.infer<typeof NewsSchema>;
 
-interface AddNewsProps {
-  onSuccess?: () => void;
-}
-
-export default function AddNews({ onSuccess }: AddNewsProps) {
+export default function AddNews() {
   const [status, setStatus] = useState<"success" | "error" | "">("");
     
   // form handler
@@ -59,158 +50,197 @@ export default function AddNews({ onSuccess }: AddNewsProps) {
   // submit handler
   const onSubmit = async (values: NewsFormInput) => {
     try {
-      await createNews({
-        ...values,
-        tanggal_news: new Date(values.tanggal_news), // aman, Zod juga sudah memastikan valid
-      });
+      const formData = new FormData();
+
+      formData.append("judul_news", values.judul_news);
+      formData.append("category_news", values.category_news);
+      formData.append("tanggal_news", values.tanggal_news); // string "YYYY-MM-DD"
+      formData.append("deskripsi_news", values.deskripsi_news);
+      formData.append("penulis_news", values.penulis_news);
+
+      if(values.image) {
+        formData.append("imageFile", values.image)
+      }
+
+      await createNews(formData);
+
       setStatus("success");
+      // Reset form
       form.reset();
-      onSuccess?.();
+      // Reload halaman
+      window.location.reload();
     } catch (err) {
-      console.error(err);
-      setStatus("error")
+      console.error("Gagal membuat berita:", err);
+      setStatus("error");
     }
-  };
+};
 
 
   return (
-    <Card className="w-full max-w-2xl border-orange-300 bg-white shadow-md rounded-xl">
+    <Card className="w-full border-orange-300 bg-white shadow-md rounded-xl">
       <CardHeader className="bg-orange-50 border-b">
         <CardTitle className="text-orange-600 text-xl font-semibold">Tambah Berita</CardTitle>
       </CardHeader>
 
-      <CardContent className="mt-6">
+      <CardContent className="my-2">
         <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            {/* Judul */}
-            <FormField
-              control={form.control}
-              name="judul_news"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Judul Berita</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan judul berita"
-                      className="bg-white border-gray-300"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Masukan judul berita yang dibuat
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Kategori */}
-            <FormField
-              control={form.control}
-              name="category_news"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Kategori Berita</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan kategori"
-                      className="bg-white border-gray-300"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Masukan kategori berita yang dibuat
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Tanggal */}
-            <FormField
-              control={form.control}
-              name="tanggal_news"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tanggal Berita</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      className="bg-white border-gray-300"
-                      {...field}
-                      value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Masukan tanggal berita yang dibuat
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-
-            {/* Deskripsi */}
-            <FormField
-              control={form.control}
-              name="deskripsi_news"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Deskripsi Berita</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan deskripsi berita"
-                      className="bg-white border-gray-300"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Masukan deskripsi berita yang dibuat
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Penulis */}
-            <FormField
-              control={form.control}
-              name="penulis_news"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Penulis Berita</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan nama penulis"
-                      className="bg-white border-gray-300"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Masukan penulis berita yang dibuat
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Button */}
-            <div className="pt-4">
-              <Button
-                type="submit"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6"
-              >
-                Simpan
-              </Button>
-              {/* Status message */}
-              <div className="pt-2">
-                {status === "success" && (
-                  <p className="text-green-600 font-medium">Berita berhasil disimpan</p>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Judul */}
+              <FormField
+                control={form.control}
+                name="judul_news"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Judul Berita</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Masukkan judul berita"
+                        className="bg-white border-gray-300"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Masukan judul berita yang dibuat
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                {status === "error" && (
-                  <p className="text-red-600 font-medium">Gagal menyimpan berita</p>
+              />
+
+              {/* Kategori */}
+              <FormField
+                control={form.control}
+                name="category_news"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kategori Berita</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Masukkan kategori"
+                        className="bg-white border-gray-300"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Masukan kategori berita yang dibuat
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
+
+              {/* Tanggal */}
+              <FormField
+                control={form.control}
+                name="tanggal_news"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tanggal Berita</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="date"
+                        className="bg-white border-gray-300"
+                        {...field}
+                        value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Masukan tanggal berita yang dibuat
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+
+              {/* Deskripsi */}
+              <FormField
+                control={form.control}
+                name="deskripsi_news"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deskripsi Berita</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Masukkan deskripsi berita"
+                        className="bg-white border-gray-300"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Masukan deskripsi berita yang dibuat
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Penulis */}
+              <FormField
+                control={form.control}
+                name="penulis_news"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Penulis Berita</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Masukkan nama penulis"
+                        className="bg-white border-gray-300"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Masukan penulis berita yang dibuat
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* UPLOAD GAMBAR */}
+                <FormField
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gambar Berita</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          className="bg-white border-gray-300"
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Masukan gambar berita
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </div>
+            <div className="text-right">
+              {/* Button */}
+              <div className="px-4">
+                <Button
+                  type="submit"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+                >
+                  Simpan
+                </Button>
+                
+                {/* Status message */}
+                <div>
+                  {status === "success" && (
+                    <p className="text-green-600 font-medium">Berita berhasil disimpan</p>
+                  )}
+                  {status === "error" && (
+                    <p className="text-red-600 font-medium">Gagal menyimpan berita</p>
+                  )}
+                </div>
               </div>
             </div>
           </form>

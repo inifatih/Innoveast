@@ -26,32 +26,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 
-// =========================
-//  ZOD REGISTRATION SCHEMA
-// =========================
-const registerSchema = z
-  .object({
-    email: z.string().email("Email tidak valid"),
-    nama: z.string().min(3, "Nama minimal 3 karakter"),
-    password: z.string().min(6, "Password minimal 6 karakter"),
-
-    kontak: z.string().optional(),
-    deskripsi: z.string().optional(),
-    lokasi: z.string().optional(),
-  })
+const registerSchema = z.object({
+  email: z.string().email(),
+  nama: z.string().min(3),
+  password: z.string().min(6),
+  kontak: z.string().optional(),
+  deskripsi: z.string().optional(),
+  lokasi: z.string().optional(),
+});
 
 type RegisterSchema = z.infer<typeof registerSchema>;
 
-export function RegisterDialog({
-  open,
-  onOpenChange,
-}: {
+interface RegisterDialogProps {
   open: boolean;
-  onOpenChange: (v: boolean) => void;
-}) {
+  onOpenChange: (value: boolean) => void;
+}
+
+export function RegisterDialog({ open, onOpenChange }: RegisterDialogProps) {
   const [serverError, setServerError] = useState("");
+  const [registrationMessage, setRegistrationMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [registrationMessage, setRegistrationMessage] = useState(""); // State untuk pesan sukses
 
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -77,27 +71,19 @@ export function RegisterDialog({
         body: JSON.stringify(values),
       });
 
-      if (!res.ok) {
-        try {
-          const errorData = await res.json();
-          setServerError(errorData.message || `Error status: ${res.status}`);
-        } catch (e) {
-          // If it's not JSON (e.g., a simple 404 HTML page)
-          setServerError(e instanceof Error ? e.message: `${res.status}`); 
-        }
-        return;
-      }
-
       const data = await res.json();
-      if (!data.success) {
-        setServerError(data.message || "Pendaftaran gagal");
+
+      if (!res.ok || !data.success) {
+        setServerError(data.message ?? "Terjadi masalah.");
         return;
       }
 
-      setRegistrationMessage(data.message);
+      // Success
       form.reset();
-    } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : "Terjadi kesalahan server");
+      setRegistrationMessage(data.message);
+      window.location.reload()
+    } catch (err) {
+      setServerError(err instanceof Error? err.message: "Terjadi masalah server");
     } finally {
       setLoading(false);
     }
@@ -107,21 +93,23 @@ export function RegisterDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md bg-white shadow-2xl border-0 rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Register</DialogTitle>
-          <DialogDescription>Silakan isi data Anda untuk menjadi Inovator.</DialogDescription>
+          <DialogTitle>Registrasi Inovator</DialogTitle>
+          <DialogDescription>
+            Silakan isi data berikut untuk mendaftar sebagai inovator.
+          </DialogDescription>
         </DialogHeader>
 
-        {/* Tambahkan tampilan pesan sukses */}
         {registrationMessage ? (
-          <div className="text-center p-4 bg-green-100 text-green-800 rounded-lg">
+          <div className="p-4 bg-green-100 text-center rounded-xl text-green-800">
             <p>{registrationMessage}</p>
-            <Button onClick={() => onOpenChange(false)} className="mt-4">Tutup</Button>
+
+            <Button className="mt-4" onClick={() => onOpenChange(false)}>
+              Tutup
+            </Button>
           </div>
         ) : (
           <Form {...form}>
-            <form className="space-y-4 mt-4" onSubmit={form.handleSubmit(onSubmit)}>
-              
-              {/* ... (Field Email, Full Name, Password tetap sama) ... */}
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               {/* Email */}
               <FormField
                 control={form.control}
@@ -130,14 +118,14 @@ export function RegisterDialog({
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="you@example.com" />
+                      <Input {...field} placeholder="example@gmail.com" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Full Name */}
+              {/* Nama */}
               <FormField
                 control={form.control}
                 name="nama"
@@ -145,7 +133,7 @@ export function RegisterDialog({
                   <FormItem>
                     <FormLabel>Nama Lengkap</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Nama lengkap" />
+                      <Input {...field} placeholder="John doe" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,7 +148,7 @@ export function RegisterDialog({
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input {...field} type="password" placeholder="••••••••" />
+                      <Input type="password" {...field} placeholder="**********" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -175,7 +163,7 @@ export function RegisterDialog({
                   <FormItem>
                     <FormLabel>Kontak</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="08xxxxxxxxxx" />
+                      <Input {...field} placeholder="08xxxxxxxxxxx" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -190,7 +178,7 @@ export function RegisterDialog({
                   <FormItem>
                     <FormLabel>Deskripsi</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Deskripsi singkat tentang Anda" />
+                      <Input {...field} placeholder="Isi informasi singkat Anda" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -205,31 +193,27 @@ export function RegisterDialog({
                   <FormItem>
                     <FormLabel>Lokasi</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Domisili Anda" />
+                      <Input {...field} placeholder="Isi domisili/lokasi Anda"/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Server Error */}
+              {/* Error Server */}
               {serverError && (
-                <p className="text-sm text-red-500 text-center font-medium">
+                <p className="text-red-500 text-sm text-center">
                   {serverError}
                 </p>
               )}
 
-              <Button
-                type="submit"
-                className="w-full rounded-xl h-10 bg-amber-600 hover:bg-amber-200 hover:cursor-pointer"
-                disabled={loading}
-              >
+              <Button disabled={loading} className="w-full rounded-xl h-10 bg-amber-600 hover:bg-amber-200 hover:cursor-pointer" type="submit">
                 {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="animate-spin h-4 w-4" /> Registering...
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Mengirim...
                   </span>
                 ) : (
-                  "Register"
+                  "Daftar"
                 )}
               </Button>
             </form>

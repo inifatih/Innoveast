@@ -2,8 +2,7 @@
 
 import AutoBreadcrumb from "@/components/AutoBreadcrumb";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { startTransition, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type SectionKey = "who" | "what" | "why" | "stand" | "journey";
 
@@ -11,145 +10,130 @@ export default function AboutPage() {
   const sections: Record<SectionKey, { title: string; text: string; image: string }> = {
     who: {
       title: "Siapa Kami",
-      text: `INOShop is an innovation platform built to connect entrepreneurs, researchers, industry, and government...`,
+      text: `Innoveast adalah platform inovasi yang dirancang untuk menghubungkan 
+              pengusaha, peneliti, industri, dan pemerintah, dengan tujuan mempercepat 
+              adopsi teknologi serta kolaborasi lintas sektor. Kami berperan sebagai 
+              ekosistem digital yang mendukung seluruh proses hilir penelitian dan 
+              pengembangan inovasi, dari ide hingga implementasi.`,
       image: "/images/story-who.jpg",
     },
     what: {
       title: "Apa yang Kami Lakukan",
-      text: `Kami menyediakan marketplace inovasi yang mempertemukan kebutuhan teknologi dari industri...`,
+      text: `Kami menyediakan marketplace inovasi yang menghubungkan kebutuhan teknologi industri 
+                dengan solusi yang ditawarkan oleh peneliti, startup, dan pengusaha. Innoveast 
+                memfasilitasi proses pencocokan inovasi agar lebih cepat, efisien, dan terfokus, 
+                sehingga setiap solusi tepat sasaran dan dapat diimplementasikan dengan optimal.`,
       image: "/images/story-what.jpg",
     },
     why: {
       title: "Mengapa Ini Penting",
-      text: `Inovasi memainkan peran besar dalam meningkatkan daya saing daerah dan nasional...`,
+      text: `Inovasi adalah kunci untuk mendorong pertumbuhan industri dan memperkuat daya saing 
+                nasional. Namun, banyak solusi inovatif yang terhambat dalam proses adopsi karena 
+                kurangnya akses ke pasar atau kesulitan menemukan mitra yang tepat. Dengan Innoveast, 
+                proses ini dipermudah sehingga inovasi dapat tersalurkan dengan lebih cepat, efisien, 
+                dan berdampak nyata.`,
       image: "/images/story-why.jpg",
     },
     stand: {
       title: "Nilai yang Kami Junjung",
-      text: `Kami berkomitmen mendorong ekosistem inovasi yang kolaboratif, terbuka, inklusif...`,
+      text: `Kami menjunjung tinggi transparansi, kolaborasi, dan keberlanjutan. Setiap inovasi yang 
+                masuk ke platform kami diproses dengan prinsip etika, keterbukaan, dan fokus pada 
+                solusi yang memberikan manfaat nyata bagi masyarakat dan industri. Nilai-nilai ini 
+                menjadi fondasi untuk membangun ekosistem inovasi yang sehat dan berkelanjutan.`,
       image: "/images/story-stand.jpg",
     },
     journey: {
       title: "Perjalanan Kami",
-      text: `INOShop merupakan inisiatif BIRDA Jawa Timur yang lahir untuk menghubungkan berbagai pemangku kepentingan...`,
+      text: `Innoveast lahir dari kebutuhan untuk menjembatani kesenjangan antara penelitian, 
+                pengembangan, dan implementasi solusi inovatif. Sejak awal, kami fokus menciptakan 
+                ekosistem digital yang dapat mempertemukan peneliti, startup, pengusaha, dan industri, 
+                sehingga inovasi dapat diakses dengan mudah, cepat, dan tepat sasaran. Perjalanan kami 
+                terus berkembang seiring bertambahnya kolaborasi dan inovasi yang berhasil kami fasilitasi.`,
       image: "/images/story-journey.jpg",
     },
   };
 
   const keys: SectionKey[] = ["who", "what", "why", "stand", "journey"];
+
   const [active, setActive] = useState<SectionKey>("who");
   const [fade, setFade] = useState(true);
   const [mobilePhase, setMobilePhase] = useState<"title" | "content">("title");
 
   const listRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [indicatorPos, setIndicatorPos] = useState(0);
-  const [indicatorHeight, setIndicatorHeight] = useState(20);
-
-  const searchParams = useSearchParams();
-
-  // handle query ?section=
-  useEffect(() => {
-    const section = searchParams.get("section") as SectionKey | null;
-    if (section && keys.includes(section)) {
-      startTransition(() => {
-        setFade(false);
-        setActive(section);
-        setTimeout(() => setFade(true), 120);
-      });
-    }
-  }, [searchParams, keys]);
 
   useEffect(() => {
     const index = keys.indexOf(active);
     const el = listRefs.current[index];
-    if (el) {
-      setIndicatorPos(el.offsetTop + el.offsetHeight / 2 - 10);
-      setIndicatorHeight(20);
-    }
+    if (el) setIndicatorPos(el.offsetTop + el.offsetHeight / 2 - 10);
   }, [active]);
 
-  // Auto rotate desktop + mobile
+  // Auto rotate tiap 5 detik
   useEffect(() => {
-    const desktopInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
-        setActive((prev) => keys[(keys.indexOf(prev) + 1) % keys.length]);
-        setTimeout(() => setFade(true), 100);
-      }, 200);
-    }, 5000);
-
-    const mobileInterval = setInterval(() => {
-      if (mobilePhase === "title") {
+        const next = keys[(keys.indexOf(active) + 1) % keys.length];
+        setActive(next);
         setMobilePhase("content");
-      } else {
-        const i = keys.indexOf(active);
-        setActive(keys[(i + 1) % keys.length]);
-        setMobilePhase("title");
-      }
-    }, 4000);
-
-    return () => {
-      clearInterval(desktopInterval);
-      clearInterval(mobileInterval);
-    };
-  }, [active, mobilePhase]);
+        setTimeout(() => setFade(true), 250);
+      }, 150);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [active]);
 
   const handleClick = (key: SectionKey) => {
     setFade(false);
-    setActive(key);
-    setMobilePhase("content");
-    setTimeout(() => setFade(true), 100);
+    setTimeout(() => {
+      setActive(key);
+      setMobilePhase("content");
+      setTimeout(() => setFade(true), 200);
+    }, 120);
   };
 
   return (
     <main>
-      {/* COVER */}
-      <section className="relative w-full h-[300px] sm:h-[400px] overflow-hidden shadow-2xl border-b-gray-600">
-        <Image
-          src="/images/Acer1.jpg"
-          alt="About Cover"
-          fill
-          className="object-cover brightness-75"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-md">About INOShop</h1>
-          <p className="text-lg sm:text-xl max-w-2xl drop-shadow-sm">
-            Pelajari kisah, tujuan, dan perjalanan kami dalam membangun ekosistem inovasi.
+      {/* ================= COVER ================= */}
+      <section className="relative w-full h-80 sm:h-[420px] overflow-hidden shadow-xl border-b">
+        <Image src="/images/Acer1.jpg" alt="About Cover" fill className="object-cover brightness-75" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+          <h1 className="text-4xl sm:text-5xl font-bold drop-shadow-lg">About INOShop</h1>
+          <p className="text-lg sm:text-xl max-w-2xl text-center drop-shadow mt-3">
+            Temukan visi dan perjalanan kami dalam membangun ekosistem inovasi Indonesia.
           </p>
         </div>
       </section>
 
       {/* Breadcrumb */}
-      <div className="container mx-auto px-4 mt-4">
+      <div className="container mx-auto px-4 my-8">
         <AutoBreadcrumb />
       </div>
 
-      {/* KISAH KAMI */}
-      <section id="kisah-kami" className="py-20 flex justify-center">
+      {/* ================== SECTION STORY ================= */}
+      <section className="py-20 flex justify-center" id="kisah-kami">
         <div className="w-11/12 max-w-6xl">
-          <h2 className="text-3xl font-bold mb-8 text-center">Kisah Kami</h2>
+          <h2 className="text-3xl font-bold mb-10 text-center">Kisah Kami</h2>
 
-          {/* Desktop */}
-          <div className="hidden md:grid md:grid-cols-2 gap-12 items-start">
+          {/* DESKTOP VIEW */}
+          <div className="hidden md:grid grid-cols-2 gap-12">
             <div>
               <h3 className={`text-xl font-bold border-l-4 border-blue-600 pl-3 mb-3 transition-opacity duration-300 ${fade ? "opacity-100" : "opacity-0"}`}>
                 {sections[active].title}
               </h3>
-              <p className={`text-gray-700 leading-relaxed mb-6 transition-opacity duration-300 ${fade ? "opacity-100" : "opacity-0"}`}>
+              <p className={`text-gray-700 mb-6 text-justify leading-relaxed transition-opacity duration-300 ${fade ? "opacity-100" : "opacity-0"}`}>
                 {sections[active].text}
               </p>
 
-              <ul className="relative space-y-4 font-semibold text-gray-600 pl-4 hidden md:block">
-                <div
-                  className="absolute left-0 w-1 bg-blue-600 rounded transition-all duration-300"
-                  style={{ top: indicatorPos, height: indicatorHeight }}
-                />
-                {keys.map((key, idx) => (
+              <ul className="relative space-y-4 font-semibold text-gray-600 pl-4">
+                <span className="absolute left-0 w-1 bg-blue-600 rounded transition-all duration-300"
+                  style={{ top: indicatorPos, height: 22 }} />
+
+                {keys.map((key, i) => (
                   <li
                     key={key}
-                    ref={(el) => { listRefs.current[idx] = el; }}
+                    ref={(el) => { listRefs.current[i] = el; }}
                     onClick={() => handleClick(key)}
-                    className={`cursor-pointer transition-all duration-200 ${active === key ? "text-gray-900" : "text-gray-500 hover:text-blue-500"}`}
+                    className={`cursor-pointer transition ${active === key ? "text-gray-900 font-bold" : "text-gray-500 hover:text-blue-500"}`}
                   >
                     {sections[key].title}
                   </li>
@@ -157,16 +141,15 @@ export default function AboutPage() {
               </ul>
             </div>
 
-            <div>
-              <Image
-                src={sections[active].image}
-                alt={sections[active].title}
-                className={`rounded-xl shadow-md object-cover w-full h-[400px] transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}`}
-              />
-            </div>
+            <Image
+              src={sections[active].image}
+              alt={sections[active].title}
+              className={`rounded-xl shadow-lg object-cover w-full h-[420px] transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}`}
+              fill
+            />
           </div>
 
-          {/* Mobile */}
+          {/* MOBILE VIEW */}
           <div className="md:hidden space-y-12">
             {keys.map((key) => (
               <div
@@ -188,17 +171,20 @@ export default function AboutPage() {
                 </div>
 
                 {active === key && mobilePhase === "content" && (
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 text-left">
-                      <p className="text-gray-700 leading-relaxed mb-4 animate-fadeIn">
+                  <div className="flex flex-col gap-4">
+                    {/* Text */}
+                    <div>
+                      <p className="text-gray-700 leading-relaxed mb-4 text-justify animate-fadeIn">
                         {sections[key].text}
                       </p>
                     </div>
-                    <div className="flex-1">
+                    {/* Image di bawah text */}
+                    <div className="w-full h-[250px] relative">
                       <Image
                         src={sections[key].image}
                         alt={sections[key].title}
-                        className="rounded-xl shadow-lg object-cover w-full h-[250px] animate-slideUp"
+                        fill
+                        className="rounded-xl shadow-lg object-cover animate-slideUp"
                       />
                     </div>
                   </div>
@@ -209,35 +195,30 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* OUR PEOPLE */}
-      <section className="py-20 bg-gray-50">
-        <div className="text-center max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-4">Orang-Orang Kami</h2>
-          <p className="text-gray-700 text-lg">
-            Tim kami adalah sumber kekuatan terbesar. Dengan pengalaman dan dedikasi tinggi, 
-            kami mendorong lahirnya inovasi yang memberikan dampak bagi masyarakat.
-          </p>
-        </div>
+      {/* Team */}
+      <section className="py-20 bg-gray-50 text-center">
+        <h2 className="text-3xl font-bold mb-4">Orang-Orang Kami</h2>
+        <p className="text-gray-700 max-w-3xl mx-auto text-lg text-justify leading-relaxed">
+          Tim adalah kekuatan utama kami. Mereka yang menghidupkan inovasi.
+        </p>
       </section>
 
-      {/* OUR TEAM */}
       <section className="py-16 px-4">
         <h2 className="text-3xl font-bold text-center mb-12">Tim Kami</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
-          <TeamCard name="Anggota 1" role="Divisi / Jabatan" />
-          <TeamCard name="Anggota 2" role="Divisi / Jabatan" />
-          <TeamCard name="Anggota 3" role="Divisi / Jabatan" />
-          <TeamCard name="Anggota 4" role="Divisi / Jabatan" />
-          <TeamCard name="Anggota 5" role="Divisi / Jabatan" />
+          {["Anggota 1", "Anggota 2", "Anggota 3", "Anggota 4", "Anggota 5"].map((name, i) => (
+            <TeamCard key={i} name={name} role="Divisi / Jabatan" />
+          ))}
         </div>
       </section>
     </main>
   );
 }
 
+/* ================= CARD TEAM ================= */
 function TeamCard({ name, role }: { name: string; role: string }) {
   return (
-    <div className="text-center hover:-translate-y-1 transition transform duration-300">
+    <div className="text-center hover:-translate-y-1 transition duration-300">
       <div className="w-32 h-32 mx-auto rounded-full bg-gray-300 shadow-lg"></div>
       <h3 className="font-semibold text-gray-900 mt-4">{name}</h3>
       <p className="text-gray-600 text-sm">{role}</p>

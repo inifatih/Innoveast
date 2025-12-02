@@ -26,16 +26,16 @@ import { Textarea } from "../ui/textarea";
 const InnovationSchema = z.object({
   nama_inovasi: z.string().min(1, "Nama inovasi wajib diisi"),
   asal_inovasi: z.string(),
-  deskripsi_inovasi: z.string().min(1, "Asal inovasi wajib diisi"),
+  deskripsi_inovasi: z.string().min(1, "Deskripsi wajib diisi"),
   inovator: z.string().min(1, "Pilih inovator"),
+  image: z.any().optional(), // file tidak divalidasi oleh zod
 });
 
-type InnovationForm = z.infer<typeof InnovationSchema>;
-interface AddInnovationProps {
-  onSuccess?: () => void;
-}
 
-export default function AddInnovation({ onSuccess }: AddInnovationProps) {
+type InnovationForm = z.infer<typeof InnovationSchema>;
+
+
+export default function AddInnovation() {
   const [status, setStatus] = useState<"success" | "error" | "">("");
 
   // form handling
@@ -49,6 +49,7 @@ export default function AddInnovation({ onSuccess }: AddInnovationProps) {
     },
   });
 
+  // Ambil data inovator untuk bagian dropdown
   const [innovators, setInnovators] = useState<
     {id: string; name:string }[]
   >([]);
@@ -64,16 +65,23 @@ export default function AddInnovation({ onSuccess }: AddInnovationProps) {
   // submit handling
   const onSubmit = async (values: InnovationForm) => {
     try {
-      await createInnovation({
-        nama_inovasi: values.nama_inovasi,
-        asal_inovasi: values.asal_inovasi,
-        deskripsi_inovasi: values.deskripsi_inovasi,
-        id_inovator: values.inovator, // ambil ID dari dropdown
-      });
+      const formData = new FormData();
+      formData.append("nama_inovasi", values.nama_inovasi);
+      formData.append("asal_inovasi", values.asal_inovasi);
+      formData.append("deskripsi_inovasi", values.deskripsi_inovasi);
+      formData.append("id_inovator", values.inovator);
+
+      if (values.image) {
+        formData.append("imageFile", values.image);
+      }
+
+      await createInnovation(formData);
+
       setStatus("success");
       // Reset form setelah submit
       form.reset();
-      onSuccess?.();
+      // Reload halaman agar table ter-refresh
+      window.location.reload()
     } catch (err) {
       console.error("Gagal membuat inovasi:", err);
       setStatus("error");
@@ -187,6 +195,25 @@ export default function AddInnovation({ onSuccess }: AddInnovationProps) {
                   )}
                 />
 
+                {/* UPLOAD GAMBAR */}
+                <FormField
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Gambar Inovasi</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          className="bg-gray-50"
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 

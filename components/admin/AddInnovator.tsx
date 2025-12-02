@@ -66,138 +66,149 @@ export default function AddInnovator() {
 
       <CardContent className="mt-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        placeholder="Email pengguna"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-gray-500">
+                      Masukkan email inovator
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Email */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800">Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-50 focus-visible:ring-orange-500"
-                      placeholder="Email pengguna"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-gray-500">
-                    Masukkan email user
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Password */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="*********"
+                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-gray-500">
+                      Password minimal 6 karakter
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Password */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800">Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="*********"
-                      className="bg-gray-50 focus-visible:ring-orange-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-gray-500">
-                    Minimal 6 karakter
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Nama */}
+              <FormField
+                control={form.control}
+                name="nama"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Nama</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        placeholder="Nama lengkap"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-gray-500">
+                      Masukkan nama inovator
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Nama */}
-            <FormField
-              control={form.control}
-              name="nama"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800">Nama (opsional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-50 focus-visible:ring-orange-500"
-                      placeholder="Nama lengkap"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Kontak */}
+              <FormField
+                control={form.control}
+                name="kontak"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Kontak</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        placeholder="08xxxxxxxxxx"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-gray-500">
+                      Masukkan nomor telepon
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Kontak */}
-            <FormField
-              control={form.control}
-              name="kontak"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800">Kontak (opsional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-50 focus-visible:ring-orange-500"
-                      placeholder="08xxxxxxxxxx"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-gray-500">
-                    Nomor telepon atau email lainnya
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Lokasi */}
+              <FormField
+                control={form.control}
+                name="lokasi"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Lokasi</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        placeholder="Lokasi inovator"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-gray-500">
+                      Masukkan domisili inovator
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Lokasi */}
-            <FormField
-              control={form.control}
-              name="lokasi"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800">Lokasi (opsional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-50 focus-visible:ring-orange-500"
-                      placeholder="Lokasi inovator"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Deskripsi */}
+              <FormField
+                control={form.control}
+                name="deskripsi"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Deskripsi</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        placeholder="Deskripsi inovator"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-gray-500">
+                      Berikan informasi singkat mengenai inovator
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Deskripsi */}
-            <FormField
-              control={form.control}
-              name="deskripsi"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800">Deskripsi (opsional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-50 focus-visible:ring-orange-500"
-                      placeholder="Deskripsi inovator"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            </div>
 
             {/* Submit Button */}
             <Button
               type="submit"
               className="bg-orange-500 hover:bg-orange-600 text-white px-6"
             >
-              Simpan User
+              Daftarkan Inovator
             </Button>
           </form>
         </Form>

@@ -4,7 +4,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 
 // ================= MOCK DATA =================
@@ -19,19 +19,38 @@ const mockData = [
   { id: 8, title: "Neural Computing", desc: "Pemrosesan data besar dengan jaringan saraf.", category: "Technology", image: "/images/Acer2.jpg" },
 ];
 
+type DetailBlockProps = {
+  title: string;
+  content: string;
+};
+
+type DetailListProps = {
+  title: string;
+  items: string[];
+};
+
+type Item = {
+  id: number;
+  title: string;
+  desc: string;
+  category: string;
+  image: string;
+};
+
+interface SidebarInfoProps {
+  label: string;
+  value: string | number | React.ReactNode;
+  badge?: boolean;
+  badgeGreen?: boolean;
+}
+
 export default function InnovationDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [openModal, setOpenModal] = useState(false);
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
   const item = mockData.find((x) => x.id === Number(id));
   const relatedInnovations = mockData.filter((x) => x.id !== Number(id)).slice(0, 3);
-
-  
-
-// ================= URL share =================
-    const [currentUrl] = useState(() => window.location.href);
-
 
   // ================= GALLERY AUTO-SLIDE =================
   useEffect(() => {
@@ -129,7 +148,15 @@ export default function InnovationDetailPage() {
                   content="Provides measurable impact by improving efficiency and enabling intelligent decision-making."
                 />
 
-                <RequestUpdate onOpen={() => setOpenModal(true)} />
+                {/* BUTTON MENUJU PAGE UPDATE REQUEST */}
+                <div className="pt-4 border-t border-slate-200">
+                  <button
+                    onClick={() => router.push("/requestupdatedata")}
+                    className="px-5 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors"
+                  >
+                    Request Update Data
+                  </button>
+                </div>
 
                 {/* ================= SHARE BUTTONS ================= */}
                 <div className="border-t border-gray-300 mt-6 pt-4">
@@ -178,9 +205,6 @@ export default function InnovationDetailPage() {
           <RelatedItems related={relatedInnovations} router={router} />
         </div>
       </section>
-
-      {/* MODAL */}
-      {openModal && <UpdateModal onClose={() => setOpenModal(false)} />}
     </main>
   );
 }
@@ -189,10 +213,6 @@ export default function InnovationDetailPage() {
    =================== COMPONENTS ============================
    ============================================================ */
 
-interface DetailBlockProps {
-  title: string;
-  content: string;
-}
 function DetailBlock({ title, content }: DetailBlockProps) {
   return (
     <div>
@@ -202,10 +222,6 @@ function DetailBlock({ title, content }: DetailBlockProps) {
   );
 }
 
-interface DetailListProps {
-  title: string;
-  items: string[];
-}
 function DetailList({ title, items }: DetailListProps) {
   return (
     <div>
@@ -219,36 +235,7 @@ function DetailList({ title, items }: DetailListProps) {
   );
 }
 
-interface RequestUpdateProps {
-  onOpen: () => void;
-}
-function RequestUpdate({ onOpen }: RequestUpdateProps) {
-  return (
-    <div className="pt-4 border-t border-slate-200">
-      <h2 className="text-xl font-semibold text-teal-700 mb-2">Request Update Data</h2>
-      <p className="text-slate-600 mb-2">
-        Have updated information about this innovation? Submit it so our team can update the catalog.
-      </p>
-      <button onClick={onOpen} className="px-5 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors">
-        Submit Update Request
-      </button>
-    </div>
-  );
-}
-
-interface InnovationItem {
-  id: number;
-  title: string;
-  category: string;
-  image?: string;
-}
-
-interface SidebarProps {
-  item: InnovationItem;
-  router: AppRouterInstance;
-}
-
-function Sidebar({ item, router }: SidebarProps) {
+function Sidebar({ item, router }: { item: Item; router: AppRouterInstance}) {
   return (
     <aside className="space-y-6 md:sticky md:top-24">
       <div className="bg-white rounded-xl p-6 shadow-md">
@@ -269,13 +256,6 @@ function Sidebar({ item, router }: SidebarProps) {
   );
 }
 
-interface SidebarInfoProps {
-  label: string;
-  value: string | number;
-  badge?: boolean;
-  badgeGreen?: boolean;
-}
-
 function SidebarInfo({ label, value, badge, badgeGreen }: SidebarInfoProps) {
   return (
     <div className="mb-4">
@@ -289,19 +269,7 @@ function SidebarInfo({ label, value, badge, badgeGreen }: SidebarInfoProps) {
   );
 }
 
-type RelatedItem = {
-  id: string | number;
-  image: string;
-  title: string;
-  category: string;
-};
-
-interface RelatedItemsProps {
-  related: RelatedItem[];
-  router: AppRouterInstance;
-}
-
-function RelatedItems({ related, router }: RelatedItemsProps) {
+function RelatedItems({ related, router }: { related: Item[]; router: AppRouterInstance}) {
   return (
     <section className="mt-8">
       <h3 className="text-2xl font-bold mb-6 text-slate-900">Related Innovations</h3>
@@ -329,64 +297,5 @@ function RelatedItems({ related, router }: RelatedItemsProps) {
         ))}
       </div>
     </section>
-  );
-}
-
-interface UpdateModalProps {
-  onClose: () => void;
-}
-
-function UpdateModal({ onClose }: UpdateModalProps) {
-  return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-full max-w-lg p-8 shadow-xl relative">
-        <button onClick={onClose} className="absolute top-3 right-3 text-gray-600 text-2xl">×</button>
-        <h2 className="text-2xl font-bold text-teal-700 mb-3">Request Data Update</h2>
-        <p className="text-gray-500 text-sm mb-6">Submit your updated information below.</p>
-        <form className="space-y-4">
-          <InputField label="Name" type="text" placeholder="Your Name" />
-          <InputField label="Email" type="email" placeholder="email@example.com" />
-          <InputField label="WhatsApp Number" type="text" placeholder="08xxxx" />
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">Section to Update</label>
-            <select className="w-full border border-gray-300 rounded-xl p-3">
-              <option value="">Choose section…</option>
-              <option>Overview</option>
-              <option>Feature</option>
-              <option>Specification</option>
-              <option>Potential Application</option>
-              <option>Unique Value</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">Update Details</label>
-            <textarea rows={4} className="w-full border border-gray-300 rounded-xl p-3" />
-          </div>
-          <button className="w-full bg-teal-700 text-white py-3 rounded-xl font-semibold hover:bg-teal-800 transition-colors">Submit Request</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-
-interface InputFieldProps {
-  label: string;
-  type: string;
-  placeholder?: string;
-}
-
-function InputField({ label, type, placeholder }: InputFieldProps) {
-  return (
-    <div>
-      <label className="block text-sm font-semibold mb-2 text-gray-700">
-        {label}
-      </label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        className="w-full border border-gray-300 rounded-xl p-3"
-      />
-    </div>
   );
 }

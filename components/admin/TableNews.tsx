@@ -10,33 +10,34 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 
-import { getAllInnovations } from "@/app/admin/innovation/action";
+import { getAllNews } from "@/app/admin/news/action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 
-export interface InnovationItem {
+export interface NewsItem {
   id: string | number;
-  nama_inovasi: string;
-  deskripsi_inovasi?: string;
-  asal_inovasi?: string;
+  judul_news: string;
+  category_news?: string | null;
+  tanggal_news?: string | null;
+  deskripsi_news?: string | null;
+  penulis_news?: string | null;
   created_at: string;
-  profiles?: { id: string; nama: string } | null;
 
   // Kolom baru
   image_url?: string | null;
 }
 
-export default function TableInnovation() {
-  const [data, setData] = useState<InnovationItem[]>([]);
+export default function TableNews() {
+  const [data, setData] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const innovations = await getAllInnovations();
-      setData(innovations);
+      const news = await getAllNews();
+      setData(news as NewsItem[]);
     } catch (err) {
-      console.error("Error fetching innovations:", err);
+      console.error("Error fetching news:", err);
       setData([]);
     } finally {
       setLoading(false);
@@ -49,9 +50,9 @@ export default function TableInnovation() {
 
   return (
     <Card className="w-full border rounded-xl shadow-sm bg-white mt-6">
-      <CardHeader className="bg-orange-50 border-b">
-        <CardTitle className="text-xl font-semibold text-orange-600">
-          Daftar Inovasi
+      <CardHeader className="bg-purple-50 border-b">
+        <CardTitle className="text-xl font-semibold text-purple-600">
+          Daftar Berita
         </CardTitle>
       </CardHeader>
 
@@ -59,30 +60,31 @@ export default function TableInnovation() {
         {loading ? (
           <div className="text-center py-6 text-gray-500">Loading...</div>
         ) : data.length === 0 ? (
-          <div className="text-center py-6 text-gray-500 italic">Belum ada data inovasi.</div>
+          <div className="text-center py-6 text-gray-500 italic">
+            Belum ada berita.
+          </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
                 <TableHead className="text-gray-700">Gambar</TableHead>
-                <TableHead className="text-gray-700">Nama Inovasi</TableHead>
+                <TableHead className="text-gray-700">Judul</TableHead>
+                <TableHead className="text-gray-700">Kategori</TableHead>
                 <TableHead className="text-gray-700">Deskripsi</TableHead>
-                <TableHead className="text-gray-700">Asal</TableHead>
-                <TableHead className="text-gray-700">Inovator</TableHead>
+                <TableHead className="text-gray-700">Penulis</TableHead>
                 <TableHead className="text-gray-700">Tanggal</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {data.map((item) => (
-                <TableRow key={item.id} className="hover:bg-orange-50/40">
-                  
+                <TableRow key={item.id} className="hover:bg-purple-50/40">
                   {/* Kolom Gambar */}
                   <TableCell>
                     {item.image_url ? (
                       <Image
                         src={item.image_url}
-                        alt={item.nama_inovasi}
+                        alt={item.judul_news}
                         width={48}
                         height={48}
                         className="h-12 w-12 object-cover rounded-md border"
@@ -92,15 +94,25 @@ export default function TableInnovation() {
                     )}
                   </TableCell>
 
-                  <TableCell className="text-gray-800">{item.nama_inovasi}</TableCell>
-                  <TableCell className="text-gray-700">{item.deskripsi_inovasi ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">
-                    {item.profiles?.nama ?? "—"}
+                  <TableCell className="text-gray-800">
+                    {item.judul_news}
                   </TableCell>
+
+                  <TableCell className="text-gray-700">
+                    {item.category_news ?? "—"}
+                  </TableCell>
+
+                  <TableCell className="text-gray-700">
+                    {item.deskripsi_news ?? "—"}
+                  </TableCell>
+
+                  <TableCell className="text-gray-700">
+                    {item.penulis_news ?? "—"}
+                  </TableCell>
+
                   <TableCell className="text-gray-600">
-                    {item.created_at
-                      ? new Date(item.created_at).toLocaleDateString("id-ID")
+                    {item.tanggal_news
+                      ? new Date(item.tanggal_news).toLocaleDateString("id-ID")
                       : "—"}
                   </TableCell>
                 </TableRow>

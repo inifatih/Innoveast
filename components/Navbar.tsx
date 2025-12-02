@@ -95,7 +95,7 @@ export default function Navbar() {
           href="/"
           className={`text-xl font-semibold transition ${isScrolled ? "text-black" : "text-white"}`}
         >
-          Inoshop
+          Innoveast
         </Link>
 
         {/* ===== MOBILE NAVIGATION ===== */}
@@ -160,9 +160,6 @@ export default function Navbar() {
                         <Button variant="ghost" className="w-full justify-start" onClick={() => { setOpenRegister(true); setMobileOpen(false); }}>
                           Register
                         </Button>
-                        {/* <Button variant="ghost" className="w-full justify-start" onClick={() => { handleLogout(); setMobileOpen(false); }}>
-                          Logout
-                        </Button> */}
                       </div>
                     </AccordionContent>
                   </AccordionItem>

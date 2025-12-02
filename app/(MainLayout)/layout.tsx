@@ -17,20 +17,18 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 
   return (
-    <html lang="en">
-      <body>
-        <Navbar/>
-        {/* 
-          Di sini children akan digantikan oleh layout user atau admin,
-          tergantung route group (misalnya (user) atau (admin)).
-        */}
-        <main>
-            {children}
-        </main>
-        {/* Global component (misalnya toast, modal portal, dsb) */}
-        {/* Spinner for loading*/}
-        <Footer />
-      </body>
-    </html>
+    <>
+      <Navbar/>
+      {/* 
+        Di sini children akan digantikan oleh layout user atau admin,
+        tergantung route group (misalnya (user) atau (admin)).
+      */}
+      <main>
+          {children}
+      </main>
+      {/* Global component (misalnya toast, modal portal, dsb) */}
+      {/* Spinner for loading*/}
+      <Footer />
+    </>
   );
 }

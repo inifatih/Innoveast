@@ -2,20 +2,35 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-// CREATE INNOVATION
-export async function createInnovation({
-  nama_inovasi,
-  asal_inovasi,
-  deskripsi_inovasi,
-  id_inovator,
-}: {
-  nama_inovasi: string;
-  asal_inovasi: string;
-  deskripsi_inovasi?: string;
-  id_inovator?: string | number;
-}) {
+export async function createInnovation(formData: FormData) {
   const supabase = await createClient();
 
+  // Ambil nilai dari FormData
+  const nama_inovasi = formData.get("nama_inovasi") as string;
+  const asal_inovasi = formData.get("asal_inovasi") as string;
+  const deskripsi_inovasi = formData.get("deskripsi_inovasi") as string;
+  const id_inovator = formData.get("id_inovator") as string;
+  const imageFile = formData.get("imageFile") as File | null;
+
+  let image_path = null;
+
+  // Jika ada file gambar → upload ke storage
+  if (imageFile) {
+    const fileExt = imageFile.name.split(".").pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `Innovations/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("assets")
+      .upload(filePath, imageFile, {
+        contentType: imageFile.type,
+      });
+
+    if (uploadError) throw uploadError;
+    image_path = filePath;
+  }
+
+  // Insert ke tabel innovations
   const { data, error } = await supabase
     .from("Innovations")
     .insert({
@@ -23,10 +38,12 @@ export async function createInnovation({
       asal_inovasi,
       deskripsi_inovasi,
       id_inovator,
+      image_path, // tambahkan kolom ini di DB
     })
     .select();
 
   if (error) throw error;
+
   return data;
 }
 
@@ -56,7 +73,7 @@ export async function getInovators() {
 export async function getAllInnovations() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase 
     .from("Innovations")
     .select(`
       id,
@@ -65,24 +82,32 @@ export async function getAllInnovations() {
       deskripsi_inovasi,
       asal_inovasi,
       id_inovator,
+      image_path,
       profiles(id, nama)
     `)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
 
-  // Map supaya frontend lebih mudah
-  const mapped = data.map(item => ({
-    id: item.id,
-    nama_inovasi: item.nama_inovasi,
-    deskripsi_inovasi: item.deskripsi_inovasi,
-    asal_inovasi: item.asal_inovasi,
-    created_at: item.created_at,
-    profiles: Array.isArray(item.profiles) ? item.profiles[0] ?? null : item.profiles ?? null, // ambil object pertama jika ada
-  }));
+  const mapped = data.map((item) => {
+    const publicURL = item.image_path
+      ? supabase.storage.from("assets").getPublicUrl(item.image_path).data.publicUrl
+      : null;
+
+    return {
+      id: item.id,
+      nama_inovasi: item.nama_inovasi,
+      deskripsi_inovasi: item.deskripsi_inovasi,
+      asal_inovasi: item.asal_inovasi,
+      created_at: item.created_at,
+      image_url: publicURL,
+    };
+  });
 
   return mapped;
 }
+
+
 
 
 

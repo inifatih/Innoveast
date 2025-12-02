@@ -4,6 +4,7 @@ import { actionSignOut } from "@/app/auth/logout/action";
 import { cn } from "@/lib/utils";
 import {
   FlagIcon,
+  HomeIcon,
   LayoutDashboard,
   LogOut,
   Newspaper,
@@ -19,6 +20,7 @@ export function AdminSidebar() {
 
   const menu = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Carousel", href: "/admin/carousel", icon: LayoutDashboard },
     { name: "Inovator", href: "/admin/innovator", icon: Users },
     { name: "Inovasi", href: "/admin/innovation", icon: Rocket },
     { name: "Berita", href: "/admin/news", icon: Newspaper },
@@ -40,11 +42,21 @@ export function AdminSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-48 bg-white shadow-2xl flex flex-col z-50">
-
       {/* Header */}
-      <div className="p-6 border-none relative shadow-sm">
-        <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
+      <div className="p-6 border-none relative shadow-sm flex flex-col items-center gap-3">
+        <Link 
+          href="/" 
+          className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-gray-100 transition gap-2 px-2"
+        >
+          <HomeIcon className="h-4 w-4 m-3" />
+          <p className="text-sm font-semibold">Home Page</p>
+        </Link>
+
+        <h1 className="text-xl font-bold text-gray-800">
+          Admin Panel
+        </h1>
       </div>
+
 
       {/* Menu */}
       <nav className="flex-1 p-4 space-y-1 shadow-sm">
