@@ -17,36 +17,66 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Loader2, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 // ================= Schema =================
 const contactSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  company: z.string().optional(),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(5, "Phone number is required"),
-  subject: z.string().min(2, "Subject is required"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  nama_lengkap: z.string().min(2, "Nama lengkap dibutuhkan"),
+  asal_organisasi: z.string().optional(),
+  email: z.string().email("Alamat email dibutuhkan"),
+  telepon: z.string().min(5, "Nomor telepon dibutuhkan"),
+  subjek: z.string().min(2, "Subjek dibutuhkan"),
+  pesan: z.string().min(10, "Pesan dibutuhkan"),
 });
 
 type ContactSchema = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const [contactUsMessage, setContactUsMessage] = useState("");
+
   const form = useForm<ContactSchema>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
-      fullName: "",
-      company: "",
+      nama_lengkap: "",
+      asal_organisasi: "",
       email: "",
-      phone: "",
-      subject: "",
-      message: "",
+      telepon: "",
+      subjek: "",
+      pesan: "",
     },
   });
 
-  const onSubmit = (values: ContactSchema) => {
-    console.log("Form submitted:", values);
+  const onSubmit = async (values: ContactSchema) => {
+    setLoading(true);
+    setServerError("");
+    setContactUsMessage("");
+
+    try {
+      const res = await fetch("/auth/contact-message/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setServerError(data.message ?? "Terjadi masalah.");
+        return;
+      }
+
+      form.reset();
+      setContactUsMessage(data.message);
+      window.location.reload()
+    } catch (err) {
+      setServerError(err instanceof Error? err.message: "Terjadi masalah server");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -170,14 +200,14 @@ export default function ContactPage() {
                     {/* Full Name */}
                     <FormField
                       control={form.control}
-                      name="fullName"
+                      name="nama_lengkap"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name *</FormLabel>
+                          <FormLabel>Nama Lengkap *</FormLabel>
                           <FormControl>
                             <Input
                               className="h-12 rounded-xl text-base"
-                              placeholder="John Doe"
+                              placeholder="Nama lengkap Anda"
                               {...field}
                             />
                           </FormControl>
@@ -186,17 +216,17 @@ export default function ContactPage() {
                       )}
                     />
 
-                    {/* Company */}
+                    {/* Asal Organisasi */}
                     <FormField
                       control={form.control}
-                      name="company"
+                      name="asal_organisasi"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Company / Organisation</FormLabel>
+                          <FormLabel>Asal Organisasi atau Perusahaan</FormLabel>
                           <FormControl>
                             <Input
                               className="h-12 rounded-xl text-base"
-                              placeholder="Your organisation"
+                              placeholder="Organisasi atau perusahaan asal Anda"
                               {...field}
                             />
                           </FormControl>
@@ -216,7 +246,7 @@ export default function ContactPage() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email Address *</FormLabel>
+                          <FormLabel>Email *</FormLabel>
                           <FormControl>
                             <Input
                               className="h-12 rounded-xl text-base"
@@ -233,14 +263,14 @@ export default function ContactPage() {
                     {/* Phone */}
                     <FormField
                       control={form.control}
-                      name="phone"
+                      name="telepon"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number *</FormLabel>
+                          <FormLabel>Nomor Telepon *</FormLabel>
                           <FormControl>
                             <Input
                               className="h-12 rounded-xl text-base"
-                              placeholder="+62..."
+                              placeholder="08xxxxxxxxxxx"
                               {...field}
                             />
                           </FormControl>
@@ -256,14 +286,14 @@ export default function ContactPage() {
                 {/* Subject */}
                 <FormField
                   control={form.control}
-                  name="subject"
+                  name="subjek"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Subject</FormLabel>
+                      <FormLabel>Subjek</FormLabel>
                       <FormControl>
                         <Input
                           className="h-12 rounded-xl text-base"
-                          placeholder="Subject of your enquiry"
+                          placeholder="Subjek pesan"
                           {...field}
                         />
                       </FormControl>
@@ -275,14 +305,14 @@ export default function ContactPage() {
                 {/* Message */}
                 <FormField
                   control={form.control}
-                  name="message"
+                  name="pesan"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Message *</FormLabel>
+                      <FormLabel>Pesan *</FormLabel>
                       <FormControl>
                         <Textarea
                           className="min-h-40 rounded-xl text-base"
-                          placeholder="Tell us how we can help you..."
+                          placeholder="Silakan isi pesan yang ingin disampaikan kepada kami"
                           {...field}
                         />
                       </FormControl>
@@ -292,11 +322,22 @@ export default function ContactPage() {
                 />
 
                 {/* Submit */}
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-lg font-medium rounded-xl"
-                >
-                  Submit Enquiry
+
+                {/* Error Server */}
+                {serverError && (
+                  <p className="text-red-500 text-sm text-center">
+                    {serverError}
+                  </p>
+                )}
+                
+                <Button disabled={loading} className="w-full rounded-xl h-10 bg-amber-600 hover:bg-amber-200 hover:cursor-pointer" type="submit">
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Mengirim...
+                    </span>
+                  ) : (
+                    "Daftar"
+                  )}
                 </Button>
 
               </form>
@@ -304,6 +345,24 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+      {/* FLOATING WHATSAPP BUTTON */}
+      <a
+        href="https://wa.me/6285748720287"
+        target="_blank"
+        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
+        aria-label="Chat via WhatsApp"
+      >
+        {/* WhatsApp SVG logo */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          fill="currentColor"
+          viewBox="0 0 16 16"
+        >
+          <path d="M8.051 0a7.953 7.953 0 00-6.17 2.879A7.928 7.928 0 000 8.037c0 1.409.363 2.788 1.052 4.01L0 16l4.07-1.059a7.964 7.964 0 003.981 1.052h.004c4.425 0 8.02-3.594 8.02-8.014a7.948 7.948 0 00-2.347-5.658A7.93 7.93 0 008.05 0zm-.017 14.575h-.003a6.57 6.57 0 01-3.356-.92l-.24-.144-2.41.63.644-2.352-.157-.242a6.56 6.56 0 01-.985-3.466A6.592 6.592 0 018.051 1.43a6.55 6.55 0 014.66 1.937 6.524 6.524 0 011.907 4.655 6.573 6.573 0 01-6.584 6.554zm3.73-4.934c-.205-.102-1.21-.598-1.397-.666-.187-.07-.324-.103-.46.102-.136.205-.528.666-.647.803-.12.136-.24.153-.444.051-.205-.102-.865-.32-1.647-1.017-.609-.542-1.02-1.21-1.137-1.415-.119-.204-.013-.314.09-.416.092-.091.205-.238.307-.358.102-.119.136-.204.205-.34.068-.136.034-.255-.017-.357-.051-.102-.46-1.11-.63-1.52-.165-.394-.333-.341-.46-.341-.119 0-.255-.017-.391-.017-.137 0-.358.051-.547.255-.188.204-.717.7-.717 1.705 0 1.004.734 1.973.835 2.11.102.136 1.444 2.204 3.503 3.084.49.204.87.326 1.167.417.49.153.938.132 1.29.08.393-.06 1.21-.495 1.38-.974.17-.478.17-.887.119-.974-.051-.085-.187-.136-.392-.238z" />
+        </svg>
+      </a>
     </main>
   );
 }
