@@ -183,14 +183,14 @@ export default function InnovationDetailPage() {
                     onClick={() => router.push("/requestupdatedata")}
                     className="px-5 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors"
                   >
-                    Request Update Data
+                    Minta Ubah Data
                   </button>
                 </div>
 
                 {/* ================= SHARE BUTTONS ================= */}
                 <div className="border-t border-gray-300 mt-6 pt-4">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-slate-700">
-                    <p className="text-sm md:mb-0">Share this innovation:</p>
+                    <p className="text-sm md:mb-0">Bagikan inovasi ini:</p>
                     <div className="flex items-center gap-4 text-xl">
                       <Link
                         href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
@@ -271,12 +271,12 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
         <SidebarInfo label="ID Number" value={`INNOV-${item.id}`} />
         <SidebarInfo label="Status" value="✓ Approved Innovation" badgeGreen />
         <SidebarInfo label="Inovator" value={item.profiles?.nama ?? "-"} />
-        <SidebarInfo label="Location" value="Jawa Timur, Indonesia" />
+        <SidebarInfo label="Location" value={item.asal_inovasi}/>
         <button
           onClick={() => router.push("/contact")}
           className="mt-4 w-full px-4 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors"
         >
-          Make an Enquiry
+          Buat Pertanyaan
         </button>
       </div>
     </aside>
@@ -299,7 +299,7 @@ function SidebarInfo({ label, value, badge, badgeGreen }: SidebarInfoProps) {
 function RelatedItems({ related, router }: { related: InnovationItem[]; router: AppRouterInstance }) {
   return (
     <section className="mt-8">
-      <h3 className="text-2xl font-bold mb-6 text-slate-900">Related Innovations</h3>
+      <h3 className="text-2xl font-bold mb-6 text-slate-900">Inovasi Terkait</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {related.map((rel) => (
           <div

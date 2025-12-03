@@ -12,10 +12,14 @@ interface Innovation {
 }
 
 const dummyData: Innovation[] = [
-  { id: 1, title: "Mesin Sortir Otomatis", description: "Sistem sortir barang otomatis untuk industri logistik.", categories: ["Logistik", "Otomasi"] },
-  { id: 2, title: "AI Prediksi Kerusakan Mesin", description: "Machine learning untuk maintenance industri.", categories: ["AI", "Maintenance"] },
-  { id: 3, title: "Inovasi Pengolahan Air Limbah", description: "Teknologi eco-friendly untuk industri kimia.", categories: ["Lingkungan", "Kimia"] },
-  { id: 4, title: "Robot Pengepakan Barang", description: "Robot industri untuk pengepakan barang.", categories: ["Robotik", "Manufaktur"] },
+  { id: 12, title: "Kampung Semanggi", description: "Inovasi Kampung Semanggi merupakan upaya pelestarian kuliner khas Surabaya sekaligus strategi pemberdayaan masyarakat melalui pengembangan kampung wisata, kampung edukasi, dan diversifikasi produk Semanggi. Program ini bertujuan meningkatkan ekonomi warga, mengangkat UMKM lokal, serta menjaga keberlanjutan budaya dan lingkungan.", categories: ["Logistik", "Otomasi"] },
+  { id: 13, title: "ASIAP Abon Ikan Asap Sebagai Inovasi SustainableDevelopment Goals (SDGs) Dalam Konsep GreenEconomy Berbasis Ekologi Di Kenjeran Surabaya", description: "Inovasi pengolahan ikan asap Kenjeran menjadi abon bernilai tambah tinggi, berdaya simpan panjang, ramah lingkungan, dan memperkuat ekonomi pesisir berbasis SDGs.", categories: ["AI", "Maintenance"] },
+  { id: 14, title: "Pemanfaatan Limbah Kulit Nanas sebagai POC untuk Peningkatan Produksi Padi	", description: "Inovasi ini mengolah limbah kulit nanas menjadi pupuk organik cair (POC) kaya enzim, vitamin, dan unsur hara untuk meningkatkan kualitas dan kuantitas hasil panen padi, sekaligus mengurangi ketergantungan petani terhadap pupuk kimia.", categories: ["Lingkungan", "Kimia"] },
+  { id: 15, title: "JANJI CINTA, (Jajanan Jeli Inovatif kaya Colagen Aktivator, Protein, Vitamin C, A, Trace Mineral dan Anti Oksidan)-MORIGLOW BITES. Paduan Teknologi dan KearIfan Lokal untuk Kesehatan dan Perekonomian yang Lebih Berdaya.", description: "JANJI CINTA – Moriglow Bites adalah jelly superfood berbahan kelor dengan nilai nutrisi tinggi dan potensi pasar besar (kesehatan, pangan fungsional, dan oleh-oleh premium). Produk ini menawarkan margin tinggi, bahan baku murah, dan permintaan pasar meningkat untuk suplemen alami.", categories: ["Robotik", "Manufaktur"] },
+  { id: 16, title: '"MIKOPLUS" Tameng dan Penerobos di Sistem Perakaran Tanaman', description: "MIKOPLUS adalah inovasi pupuk organik plus berbasis jamur Mikoriza yang berfungsi sebagai tameng dan penerobos pada sistem perakaran tanaman. Produk ini meningkatkan ketahanan tanaman terhadap kekeringan, menekan biaya pupuk kimia, serta memperbaiki kesuburan tanah secara berkelanjutan.", categories: ["Robotik", "Manufaktur"] },
+  { id: 17, title: "Dari Sereh Wangi ke Deodoran Spray: Inovasi Berkelanjutan untuk Kesehatan dan Kewirausahaan", description: "“Dari Sereh Wangi ke Deodoran Spray” adalah inovasi deodoran alami berbasis tawas dan minyak sereh wangi untuk mengatasi bau badan remaja sekaligus menciptakan peluang kewirausahaan berkelanjutan bagi siswa SMKN 1 Kalitengah. Produk ini memanfaatkan herbal lokal Lamongan yang melimpah dan aman untuk kulit, dengan proses produksi sederhana, murah, dan skalabel.", categories: ["Robotik", "Manufaktur"] },
+  { id: 18, title: "LONTARVERSE: Inovasi Sirkular Milenial Berbasis Pemberdayaan untuk Energi Terbarukan, Pangan Lokal, dan Desa Masa Depan", description: "LONTARVERSE adalah gerakan inovasi sirkular milenial yang menggabungkan energi terbarukan, pangan lokal, dan desa masa depan dalam satu ekosistem berkelanjutan. Terinspirasi dari gaya LegendTrend, LONTARVERSE menghadirkan narasi futuristik berbasis kearifan lokal—mengubah potensi pohon lontar menjadi energi, pangan, dan nilai ekonomi kreatif yang relevan bagi generasi muda.", categories: ["Robotik", "Manufaktur"] },
+  { id: 19, title: "Bricket Dari Limbah Kopi", description: "Inovasi ini mengolah limbah kopi (kayu, kulit, daun) di lingkungan SDN Gelang 07—yang sebelumnya tidak termanfaatkan—menjadi briket biomassa sebagai energi alternatif terbarukan. Berbasis pendidikan lingkungan, inovasi ini menyasar pembelajaran praktis, kebersihan lingkungan, serta model ekonomi sirkular sederhana yang dapat direplikasi.", categories: ["Robotik", "Manufaktur"] },
 ];
 
 // ------------------------------
@@ -148,7 +152,7 @@ export default function SistemPencocokanPage() {
             {filtered.map((item) => (
               <Link
                 key={item.id}
-                href={`/sistempencocokan/${item.id}`}
+                href={`/innovation/${item.id}`}
                 className="
                   p-5 sm:p-6 
                   rounded-3xl bg-white shadow-lg border border-gray-100
