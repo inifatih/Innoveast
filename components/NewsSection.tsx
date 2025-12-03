@@ -1,11 +1,10 @@
 "use client"
-// app/events/page.tsx atau components/Events.tsx
-import { getPublicNews } from "@/app/(MainLayout)/news/action"; // sesuaikan path
+import { getPublicNews } from "@/app/(MainLayout)/news/action";
+// components/Section1.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 export interface NewsItem {
   id: string | number;
   judul_news: string;
@@ -19,7 +18,8 @@ export interface NewsItem {
 
 export type NewsList = NewsItem[];
 
-export default function News() {
+export default function NewsSection() {
+
   // Fetch data langsung di server
   const [news, setNews] = useState<NewsItem[]>([]);
 
@@ -29,8 +29,16 @@ export default function News() {
     const loadNews = async () => {
       setLoading(true);
       try {
-        const data = await getPublicNews();  // ⬅️ panggil langsung server action
-        setNews(data);
+        const data = await getPublicNews();
+
+        // Urutkan berdasarkan tanggal terbaru → lama
+        const sorted = data.sort(
+          (a: NewsItem, b: NewsItem) =>
+            new Date(b.tanggal_news).getTime() - new Date(a.tanggal_news).getTime()
+        );
+
+        // Ambil hanya 4 teratas
+        setNews(sorted.slice(0, 4));
       } catch (err) {
         console.error("Gagal mengambil data news:", err);
       }
@@ -39,6 +47,7 @@ export default function News() {
 
     loadNews();
   }, []);
+
 
   if (loading) {
     return (
@@ -49,32 +58,17 @@ export default function News() {
   }
 
   return (
-    <main>
-      {/* Hero Section */}
-      <section className="relative w-full h-[300px] sm:h-[400px] overflow-hidden">
-        <Image
-          src="/images/Acer1.jpg"
-          alt="Innovation Cover"
-          fill
-          className="object-cover brightness-75"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-md">Berita</h1>
-          <p className="text-lg sm:text-xl max-w-2xl drop-shadow-sm">
-            Temukan berita - berita yang cocok.
-          </p>
-        </div>
-      </section>
+    <section className="w-full py-20 bg-white">
+      <div className="max-w-11/12 mx-auto">
+        <h2 className="text-4xl font-bold tracking-tight text-[#1A1333] mb-12">
+          <Link href="/news" className="hover:underline">
+            Berita Terbaru
+          </Link>
+          
+        </h2>
 
-      {/* News Grid */}
-      <section className="w-full py-20 bg-white">
-        <div className="max-w-11/12 mx-auto">
-          <h2 className="text-4xl font-bold tracking-tight text-[#1A1333] mb-12">
-            Berita
-          </h2>
-
-          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-            {news.map((item) => (
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          {news.map((item) => (
             <Card
               key={item.id}
               className="overflow-hidden border-0 shadow-none hover:shadow-2xl transition-shadow duration-300"
@@ -116,9 +110,8 @@ export default function News() {
               </Link>
             </Card>
           ))}
-          </div>
         </div>
-      </section>
-    </main>
-  );
+      </div>
+    </section>
+  )
 }

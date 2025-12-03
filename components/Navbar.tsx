@@ -48,17 +48,31 @@ export default function Navbar() {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false); // NEW: prevent hydration mismatch
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Ambil User
   useEffect(() => {
     const loadUser = async () => {
       const supabase = createClient();
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user ?? null);
+      const { data: authData } = await supabase.auth.getUser();
+      const currentUser = authData.user;
+
+      setUser(currentUser ?? null);
+
+      if (!currentUser) return;
+
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", currentUser.id)
+        .single();
+
+      setIsAdmin(userProfile?.is_admin === true);
     };
 
     loadUser();
   }, []);
+
 
 
   const handleSignOut = async () => {
@@ -243,10 +257,27 @@ export default function Navbar() {
                         </>
                       ) : (
                         <>
-                          <Link href="">
-                            <Button variant="ghost" className="w-full justify-start text-left">Saya</Button>
-                          </Link>
-                          <Button variant="ghost" className="w-full justify-start text-left" onClick={handleSignOut}>
+                          {isAdmin ? (
+                            // === Jika Admin ===
+                            <Link href="/admin">
+                              <Button variant="ghost" className="w-full justify-start text-left">
+                                Admin Panel
+                              </Button>
+                            </Link>
+                          ) : (
+                            // === Jika User biasa ===
+                            <Link href="/profile">
+                              <Button variant="ghost" className="w-full justify-start text-left">
+                                Saya
+                              </Button>
+                            </Link>
+                          )}
+
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start text-left"
+                            onClick={handleSignOut}
+                          >
                             Logout
                           </Button>
                         </>

@@ -2,8 +2,8 @@
 
 import About from "@/components/About";
 import { CarouselComponent } from "@/components/Carousel";
-import Hero from "@/components/Hero";
-import Section1 from "@/components/Section1";
+import InnovationSection from "@/components/InnovationSection";
+import NewsSection from "@/components/NewsSection";
 
 // LANDING PAGE FOR ALL ROLES
 export default function HomePage() {
@@ -11,8 +11,8 @@ export default function HomePage() {
     <main className="flex-1 min-h-screen">
       <CarouselComponent />
       <About />
-      <Section1 />
-      <Hero />
+      <NewsSection />
+      <InnovationSection />
     </main>
   );
 }
