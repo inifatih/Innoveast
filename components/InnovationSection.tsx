@@ -80,7 +80,7 @@ export default function InnovationSection() {
           
         </h2>
 
-        <div className="grid grid-cols-4 md:grid-cols-4 gap-6">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
             {data.length === 0 ? (
               <p className="text-gray-500">No tech offers found.</p>
             ) : (
