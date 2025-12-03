@@ -99,7 +99,7 @@ export default function AddInnovation() {
 
 
   return (
-    <Card className="w-full border border-gray-200 rounded-xl shadow-sm bg-white">
+    <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl">
       <CardHeader className="bg-orange-50 border-b">
         <CardTitle className="text-xl font-semibold text-orange-600">
           Tambahkan Inovasi

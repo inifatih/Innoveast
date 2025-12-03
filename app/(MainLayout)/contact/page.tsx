@@ -336,7 +336,7 @@ export default function ContactPage() {
                       <Loader2 className="w-4 h-4 animate-spin" /> Mengirim...
                     </span>
                   ) : (
-                    "Daftar"
+                    "Kirim Pesan"
                   )}
                 </Button>
 

@@ -32,7 +32,7 @@ export default async function AdminLayout({
     <div className="flex h-screen">
       <AdminSidebar />
 
-      <main className="ml-48 w-full p-6">
+      <main className="ml-48 w-full p-6 max-w-[90%]">
         {children}
       </main>
     </div>

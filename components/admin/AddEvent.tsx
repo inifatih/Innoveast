@@ -76,7 +76,7 @@ export default function AddEvent() {
     };
 
   return (
-    <Card className="w-full border-orange-300 bg-white shadow-md rounded-xl">
+    <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl">
       <CardHeader className="bg-orange-50 border-b">
         <CardTitle className="text-orange-600 text-xl font-semibold">
           Tambah Acara

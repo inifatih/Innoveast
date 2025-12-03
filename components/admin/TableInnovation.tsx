@@ -51,7 +51,7 @@ export default function TableInnovation() {
   }, []);
 
   return (
-    <Card className="w-full border rounded-xl shadow-sm bg-white mt-6">
+    <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl mt-6">
       <CardHeader className="bg-orange-50 border-b">
         <CardTitle className="text-xl font-semibold text-orange-600">
           Daftar Inovasi
