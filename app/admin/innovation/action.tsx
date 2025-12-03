@@ -8,7 +8,10 @@ export async function createInnovation(formData: FormData) {
   // Ambil nilai dari FormData
   const nama_inovasi = formData.get("nama_inovasi") as string;
   const asal_inovasi = formData.get("asal_inovasi") as string;
-  const deskripsi_inovasi = formData.get("deskripsi_inovasi") as string;
+  const overview = formData.get("overview") as string;
+  const features = formData.get("features") as string;
+  const potential_application = formData.get("potential_application") as string;
+  const unique_value = formData.get("unique_value") as string;
   const id_inovator = formData.get("id_inovator") as string;
   const imageFile = formData.get("imageFile") as File | null;
 
@@ -36,7 +39,10 @@ export async function createInnovation(formData: FormData) {
     .insert({
       nama_inovasi,
       asal_inovasi,
-      deskripsi_inovasi,
+      overview,
+      features,
+      potential_application,
+      unique_value,
       id_inovator,
       image_path, // tambahkan kolom ini di DB
     })
@@ -79,7 +85,10 @@ export async function getAllInnovations() {
       id,
       created_at,
       nama_inovasi,
-      deskripsi_inovasi,
+      overview,
+      features,
+      potential_application,
+      unique_value,
       asal_inovasi,
       id_inovator,
       image_path,
@@ -97,7 +106,10 @@ export async function getAllInnovations() {
     return {
       id: item.id,
       nama_inovasi: item.nama_inovasi,
-      deskripsi_inovasi: item.deskripsi_inovasi,
+      overview: item.overview,
+      features: item.features,
+      potential_application: item.potential_application,
+      unique_value: item.unique_value,
       asal_inovasi: item.asal_inovasi,
       created_at: item.created_at,
       image_url: publicURL,

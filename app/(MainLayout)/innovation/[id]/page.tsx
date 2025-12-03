@@ -15,15 +15,7 @@ type DetailBlockProps = {
 
 type DetailListProps = {
   title: string;
-  items: string[];
-};
-
-type Item = {
-  id: number;
-  title: string;
-  desc: string;
-  category: string;
-  image: string;
+  items: string;
 };
 
 interface SidebarInfoProps {
@@ -36,7 +28,10 @@ interface SidebarInfoProps {
 export interface InnovationItem {
   id: string | number;
   nama_inovasi: string;
-  deskripsi_inovasi?: string;
+  overview?: string;
+  features?: string;
+  potential_application?: string;
+  unique_value?: string;
   asal_inovasi?: string;
   created_at: string;
   profiles?: { id: string; nama: string } | null;
@@ -168,24 +163,18 @@ export default function InnovationDetailPage() {
 
               {/* DETAILS SECTION */}
               <section className="bg-white rounded-xl p-6 shadow-sm space-y-6">
-                <DetailBlock title="Technology Overview" content={item.deskripsi_inovasi || ""} />
+                <DetailBlock title="Technology Overview" content={item.overview || ""} />
                 <DetailList
                   title="Technology Features & Specifications"
-                  items={[
-                    "High efficiency performance",
-                    "Modular architecture for scalability",
-                    "Easy integration with existing systems",
-                    "Low carbon footprint",
-                    "Certified and field-tested",
-                  ]}
+                  items={item.features || ""}
                 />
                 <DetailBlock
                   title="Potential Application"
-                  content="Applicable across smart cities, agriculture, manufacturing, healthcare, and renewable energy systems."
+                  content={item.potential_application || ""}
                 />
                 <DetailBlock
                   title="Unique Value Proposition"
-                  content="Provides measurable impact by improving efficiency and enabling intelligent decision-making."
+                  content={item.unique_value || ""}
                 />
 
                 {/* BUTTON MENUJU PAGE UPDATE REQUEST */}
@@ -268,11 +257,7 @@ function DetailList({ title, items }: DetailListProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-teal-700 border-l-4 border-teal-200 pl-4 mb-2">{title}</h2>
-      <ul className="space-y-2 pl-4">
-        {items.map((i: string, idx: number) => (
-          <li key={idx} className="relative pl-6">{i}</li>
-        ))}
-      </ul>
+      <p>{items}</p>
     </div>
   );
 }
@@ -285,7 +270,7 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
         {/* <SidebarInfo label="Category" value={item.category} badge /> */}
         <SidebarInfo label="ID Number" value={`INNOV-${item.id}`} />
         <SidebarInfo label="Status" value="✓ Approved Innovation" badgeGreen />
-        <SidebarInfo label="TRL" value="TRL 7 - System Prototype" />
+        <SidebarInfo label="Inovator" value={item.profiles?.nama ?? "-"} />
         <SidebarInfo label="Location" value="Jawa Timur, Indonesia" />
         <button
           onClick={() => router.push("/contact")}

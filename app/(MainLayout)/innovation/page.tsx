@@ -44,7 +44,10 @@ function ListItem({ title, children, href }: ListItemProps) {
 export interface InnovationItem {
   id: string | number;
   nama_inovasi: string;
-  deskripsi_inovasi?: string;
+  overview?: string;
+  features?: string;
+  potential_application?: string;
+  unique_value?: string;
   asal_inovasi?: string;
   created_at: string;
   profiles?: { id: string; nama: string } | null;
@@ -272,7 +275,7 @@ export default function TechOffersPage() {
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-gray-900">{item.nama_inovasi}</h3>
                     {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
-                    <p className="text-gray-700 text-sm">{item.deskripsi_inovasi}</p>
+                    <p className="text-gray-700 text-sm">{item.overview}</p>
                   </div>
                 </Link>
               ))

@@ -4,6 +4,7 @@ import { actionSignOut } from "@/app/auth/logout/action";
 import { cn } from "@/lib/utils";
 import {
   FlagIcon,
+  Home,
   HomeIcon,
   LayoutDashboard,
   LogOut,
@@ -46,9 +47,9 @@ export function AdminSidebar() {
       <div className="p-6 border-none relative shadow-sm flex flex-col items-center gap-3">
         <Link 
           href="/" 
-          className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-gray-100 transition gap-2 px-2"
+          className="flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-700 border border-gray-200 hover:border-orange-300 hover:text-orange-600"
         >
-          <HomeIcon className="h-4 w-4 m-3" />
+          <HomeIcon className="h-4 w-4 mx-2"/>
           <p className="text-sm font-semibold">Home Page</p>
         </Link>
 

@@ -17,7 +17,10 @@ import Image from "next/image";
 export interface InnovationItem {
   id: string | number;
   nama_inovasi: string;
-  deskripsi_inovasi?: string;
+  overview?: string;
+  features?: string;
+  potential_application?: string;
+  unique_value?: string;
   asal_inovasi?: string;
   created_at: string;
   profiles?: { id: string; nama: string } | null;
@@ -66,7 +69,10 @@ export default function TableInnovation() {
               <TableRow className="bg-gray-50">
                 <TableHead className="text-gray-700">Gambar</TableHead>
                 <TableHead className="text-gray-700">Nama Inovasi</TableHead>
-                <TableHead className="text-gray-700">Deskripsi</TableHead>
+                <TableHead className="text-gray-700">Overview</TableHead>
+                <TableHead className="text-gray-700">Features</TableHead>
+                <TableHead className="text-gray-700">Potential Application</TableHead>
+                <TableHead className="text-gray-700">Unique Value</TableHead>
                 <TableHead className="text-gray-700">Asal</TableHead>
                 <TableHead className="text-gray-700">Inovator</TableHead>
                 <TableHead className="text-gray-700">Tanggal</TableHead>
@@ -93,7 +99,10 @@ export default function TableInnovation() {
                   </TableCell>
 
                   <TableCell className="text-gray-800">{item.nama_inovasi}</TableCell>
-                  <TableCell className="text-gray-700">{item.deskripsi_inovasi ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.overview ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.features ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.potential_application ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.unique_value ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">
                     {item.profiles?.nama ?? "—"}
