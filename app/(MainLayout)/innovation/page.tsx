@@ -2,6 +2,7 @@
 
 import { getPublicInnovations } from "@/app/(MainLayout)/innovation/action";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
@@ -92,6 +93,21 @@ export default function TechOffersPage() {
     //   (category === "All" || item.category === category)
   );
 
+  // Truncate jika terlalu panjang > 100 char
+  const truncate = (text: string | undefined, max: number) => {
+    if (!text) return "";
+    return text.length > max ? text.substring(0, max) + "..." : text;
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full py-10 text-center text-lg font-medium text-gray-600">
+        Sedang memuat inovasi...
+      </div>
+    );
+  }
+
+
   return (
     <main className="min-h-screen bg-gray-50">
       {/* HERO */}
@@ -113,7 +129,7 @@ export default function TechOffersPage() {
       </section>
 
       {/* CONTENT LAYOUT */}
-      <section className="max-w-7xl mx-auto px-4 md:px-0 flex flex-col md:flex-row gap-8 mt-10 mb-20">
+      <section className="max-w-full mx-4 px-4 flex flex-col md:flex-row gap-8 mt-10 mb-20">
         {/* ======================= SIDEBAR DESKTOP ======================= */}
         <aside
           className="hidden md:flex flex-col w-72 shrink-0 bg-white p-6 shadow rounded-lg 
@@ -205,13 +221,13 @@ export default function TechOffersPage() {
           {/* TEXT SECTION */}
           <div className="mb-6">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Approved Innovation</h2>
-            <p className="text-gray-700 leading-relaxed max-w-3xl text-justify">
+            <p className="text-gray-700 leading-relaxed max-w-full text-justify text-md font-medium">
               Approved Innovation is a curated catalog of innovations that have successfully passed the assessment 
               and verification process conducted by BRIDA Jawa Timur. 
               These innovations have been evaluated for quality, feasibility, impact, and readiness for adoption. Each listed innovation has met the standards required to be recognized as a reliable and implementable solution. 
               This catalog serves as a trusted reference for stakeholders, providing access to proven ideas that can be applied, replicated, or scaled across various sectors. By exploring Approved Innovations, users can confidently discover high-quality solutions that have demonstrated real potential to support regional development and public innovation initiatives.
             </p>
-            <p className="text-gray-700 leading-relaxed max-w-3xl mt-4">
+            <p className="text-gray-700 leading-relaxed max-w-full mt-4 text-md font-semibold">
               By exploring Approved Innovations, users can confidently discover solutions that deliver measurable results.
             </p>
           </div>
@@ -258,26 +274,46 @@ export default function TechOffersPage() {
               <p className="text-gray-500">No tech offers found.</p>
             ) : (
               filteredData.map((item) => (
-                <Link
+                <Card
                   key={item.id}
-                  href={`/innovation/${item.id}`}
-                  className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition block"
+                  className="overflow-hidden border-0 shadow-none hover:shadow-2xl transition-shadow duration-300"
                 >
-                  <div className="relative w-full h-56">
-                    <Image
-                      src={item.image_url || "/images/default.jpg"}
-                      alt={item.nama_inovasi}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+                  <Link
+                    key={item.id}
+                    href={`/innovation/${item.id}`}
+                  >
+                    {/* Image */}
+                    <div className="relative w-full h-56">
+                      {item.image_url && (
+                        <Image
+                          src={item.image_url}
+                          alt={item.nama_inovasi}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
+                    {/* Header */}
+                    <CardHeader className="py-4">
+                      <CardTitle className="text-lg font-semibold text-[#1A1333]">
+                        {truncate(item.nama_inovasi, 50)}
+                      </CardTitle>
+                    </CardHeader>
+                    {/* Content */}
+                    <CardContent>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        
+                      </h3>
 
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900">{item.nama_inovasi}</h3>
-                    {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
-                    <p className="text-gray-700 text-sm">{item.overview}</p>
-                  </div>
-                </Link>
+                      {/* Kategori Inovasi */}
+                      {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
+                      {/* Overview Inovasi */}
+                      <p className="text-gray-700 text-sm">
+                        {truncate(item.overview, 100)}
+                      </p>
+                    </CardContent>
+                  </Link>
+                </Card>
               ))
             )}
           </div>

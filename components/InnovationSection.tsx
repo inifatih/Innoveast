@@ -107,7 +107,7 @@ export default function InnovationSection() {
                     {/* Header */}
                     <CardHeader className="py-4">
                       <CardTitle className="text-lg font-semibold text-[#1A1333]">
-                        {truncate(item.nama_inovasi, 100)}
+                        {truncate(item.nama_inovasi, 50)}
                       </CardTitle>
                     </CardHeader>
                     {/* Content */}

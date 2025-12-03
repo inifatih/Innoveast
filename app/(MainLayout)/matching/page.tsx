@@ -29,7 +29,7 @@ export default function InovasiMatchingPage() {
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Link href="/sistempencocokan">
+              <Link href="/sistemPencocokan">
                 <Button className="bg-[#37B8C3] text-[#031A26] font-semibold hover:bg-[#4CD6DF] px-6 py-4 rounded-lg">
                   Mulai Pencocokan
                 </Button>
@@ -110,9 +110,9 @@ export default function InovasiMatchingPage() {
       {/* ================= ABOUT SECTION ================= */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-[#053B44]">Apa Itu Inovasi Matching?</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-[#053B44]">Apa itu Fasilitas Pencocokan Inovasi (Innovation Matching)?</h2>
           <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-            Inovasi Matching adalah fitur yang menghubungkan kebutuhan industri
+            Fasilitas Pencocokan Inovasi adalah fitur yang menghubungkan kebutuhan industri
             dengan inovasi yang tersedia di katalog kami. Dengan sistem cerdas,
             kebutuhan industri dapat dicocokkan dengan solusi inovatif yang paling relevan.
           </p>
@@ -137,14 +137,14 @@ export default function InovasiMatchingPage() {
             <div className="p-6 bg-white rounded-xl shadow text-center border border-[#0A6C71]/10">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 text-[#0A6C71]">Database Inovasi</h3>
               <p className="text-gray-600 text-sm sm:text-base">
-                Ribuan inovasi terverifikasi siap dicocokkan berdasarkan kategori dan teknologi.
+                Ratusan inovasi terverifikasi siap dicocokkan berdasarkan kategori dan teknologi.
               </p>
             </div>
 
             <div className="p-6 bg-white rounded-xl shadow text-center border border-[#0A6C71]/10">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 text-[#0A6C71]">Rekomendasi Tepat</h3>
               <p className="text-gray-600 text-sm sm:text-base">
-                Sistem memberikan daftar inovasi paling relevan dalam hitungan detik.
+                Sistem dapat memberikan daftar inovasi yang paling relevan dengan kebutuhan industri.
               </p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function InovasiMatchingPage() {
             Baik Anda industri atau inovator—sistem pencocokan siap mempercepat kolaborasi inovasi.
           </p>
 
-          <Link href="/matching">
+          <Link href="/sistemPencocokan">
             <Button className="bg-[#37B8C3] text-[#031A26] font-bold px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg hover:bg-[#4CD6DF]">
               Gunakan Sistem Pencocokan
             </Button>

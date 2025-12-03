@@ -175,10 +175,27 @@ export default function Navbar() {
                           </>
                         ) : (
                           <>
-                            <Link href="">
-                              <Button variant="ghost" className="w-full justify-start text-left">Saya</Button>
-                            </Link>
-                            <Button variant="ghost" className="w-full justify-start text-left" onClick={handleSignOut}>
+                            {isAdmin ? (
+                              // === Jika Admin ===
+                              <Link href="/admin">
+                                <Button variant="ghost" className="w-full justify-start text-left">
+                                  Admin Panel
+                                </Button>
+                              </Link>
+                            ) : (
+                              // === Jika User biasa ===
+                              <Link href="/profile">
+                                <Button variant="ghost" className="w-full justify-start text-left">
+                                  Saya
+                                </Button>
+                              </Link>
+                            )}
+
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start text-left"
+                              onClick={handleSignOut}
+                            >
                               Logout
                             </Button>
                           </>
