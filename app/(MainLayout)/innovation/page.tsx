@@ -4,7 +4,6 @@ import { getPublicInnovations } from "@/app/(MainLayout)/innovation/action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import RichTextViewer from "@/components/Viewer";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -43,19 +42,24 @@ function ListItem({ title, children, href }: ListItemProps) {
   );
 }
 
-export interface InnovationItem {
-  id: string | number;
+interface InnovationItem {
+  id: number;
   nama_inovasi: string;
   overview: string;
   features: string;
   potential_application: string;
   unique_value: string;
-  asal_inovasi?: string;
+  asal_inovasi: string;
   created_at: string;
-  profiles?: { id: string; nama: string } | null;
-
-  // Kolom baru
-  image_url?: string | null;
+  // inovator dari Profiles Table
+  innovator: {
+    id: string | null;
+    nama: string | null;
+  };
+  // kumpulan image url dari array
+  images: string[];
+  // kategori lebih dari 1
+  categories: (string | null)[];
 }
 
 export default function TechOffersPage() {
@@ -285,9 +289,9 @@ export default function TechOffersPage() {
                   >
                     {/* Image */}
                     <div className="relative w-full h-56">
-                      {item.image_url && (
+                      {item.images && (
                         <Image
-                          src={item.image_url}
+                          src={item.images[0]}
                           alt={item.nama_inovasi}
                           fill
                           className="object-cover"

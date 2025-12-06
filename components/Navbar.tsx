@@ -107,7 +107,7 @@ export default function Navbar() {
           href="/"
           className={`text-xl font-semibold transition ${isScrolled ? "text-black" : "text-white"}`}
         >
-          Innoveast
+          Orbit Jatim
         </Link>
 
         {/* ===== MOBILE NAVIGATION ===== */}

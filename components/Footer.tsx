@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import { FaFacebookF, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -73,7 +73,7 @@ export default function Footer() {
       {/* Footer bottom */}
       <div className="border-t border-gray-700 mt-12 pt-6">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} Inoshop | All Rights Reserved</p>
+          <p>© {new Date().getFullYear()} Orbit Jatim | All Rights Reserved</p>
 
             <div className="flex items-center gap-4 mt-4 md:mt-0 text-xl text-gray-400">
                 <Link href="#" className="hover:text-white"><FaFacebookF /></Link>

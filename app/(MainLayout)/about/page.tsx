@@ -84,7 +84,7 @@ export default function AboutPage() {
       <section className="relative w-full h-80 sm:h-[420px] overflow-hidden shadow-xl border-b">
         <Image src="/images/Acer1.jpg" alt="About Cover" fill className="object-cover brightness-75" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-          <h1 className="text-4xl sm:text-5xl font-bold drop-shadow-lg">About INOShop</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold drop-shadow-lg">About Orbit Jatim</h1>
           <p className="text-lg sm:text-xl max-w-2xl text-center drop-shadow mt-3">
             Temukan visi dan perjalanan kami dalam membangun ekosistem inovasi Indonesia.
           </p>
