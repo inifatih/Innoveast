@@ -15,8 +15,8 @@ export async function getPublicInnovations() {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("Innovations")
-    .select(`
+  .from("Innovations")
+  .select(`
       id,
       created_at,
       nama_inovasi,
@@ -36,7 +36,8 @@ export async function getPublicInnovations() {
 
       Innovation_images(image_path)
     `)
-    .order("created_at", { ascending: false });
+  .order("created_at", { ascending: false });
+
 
   if (error) throw error;
 
@@ -55,7 +56,8 @@ export async function getPublicInnovations() {
         })
         .map((cat) => cat.nama_kategori)
         .filter((name) => Boolean(name)) || [];
-
+        
+    const innovator = Array.isArray(item.Profiles) ? item.Profiles[0] : item.Profiles;
 
     return {
       id: item.id,
@@ -66,11 +68,18 @@ export async function getPublicInnovations() {
       unique_value: item.unique_value,
       asal_inovasi: item.asal_inovasi,
       created_at: item.created_at,
+
+      innovator: {
+        id: innovator?.id || null,
+        nama: innovator?.nama || null,
+      },
+
       social: {
         tiktok: item.tiktok_url,
         instagram: item.instagram_url,
         youtube: item.youtube_url,
       },
+
       images,
       categories,
     };

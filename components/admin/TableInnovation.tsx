@@ -114,10 +114,10 @@ export default function TableInnovation() {
                       "—"
                     )}
                   </TableCell>                  
-                  <TableCell className="text-gray-700">{item.overview ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{item.features ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{item.potential_application ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{item.unique_value ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{htmlToText(item.overview) ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{htmlToText(item.features) ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{htmlToText(item.potential_application) ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{htmlToText(item.unique_value) ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">{item.innovator?.nama ?? "—"}</TableCell>
                   <TableCell className="text-gray-700"><SocialCell social={item.social}/></TableCell>
@@ -287,4 +287,11 @@ export function SocialCell({ social }: SocialCellProps) {
   );
 }
 
+// Helper
+function htmlToText(html: string) {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return tmp.textContent || "";
+}
 

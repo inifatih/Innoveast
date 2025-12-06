@@ -1,12 +1,21 @@
 "use client";
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTiktok, FaTwitter, FaYoutube } from "react-icons/fa";
 import { getPublicInnovations } from "../action";
+
 
 type DetailBlockProps = {
   title: string;
@@ -25,19 +34,30 @@ interface SidebarInfoProps {
   badgeGreen?: boolean;
 }
 
-export interface InnovationItem {
-  id: string | number;
+interface InnovationItem {
+  id: number;
   nama_inovasi: string;
-  overview?: string;
-  features?: string;
-  potential_application?: string;
-  unique_value?: string;
-  asal_inovasi?: string;
+  overview: string;
+  features: string;
+  potential_application: string;
+  unique_value: string;
+  asal_inovasi: string;
   created_at: string;
-  profiles?: { id: string; nama: string } | null;
-
-  // Kolom baru
-  image_url?: string | null;
+  // inovator dari Profiles Table
+  innovator: {
+    id: string | null;
+    nama: string | null;
+  };
+  // kumpulan image url dari array
+  images: string[];
+  // kategori lebih dari 1
+  categories: (string | null)[];
+  // sosmed
+  social: {
+    tiktok?: string ;
+    instagram?: string ;
+    youtube?: string;
+  };
 }
 
 export default function InnovationDetailPage() {
@@ -80,18 +100,6 @@ export default function InnovationDetailPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const slideGallery = (dir: number) => {
-    const slider = document.getElementById("galleryCarousel");
-    if (!slider) return;
-
-    const total = slider.children.length;
-    const current = Number(slider.getAttribute("data-index") || 0);
-    const next = (current + dir + total) % total;
-
-    slider.style.transform = `translateX(-${next * 100}%)`;
-    slider.setAttribute("data-index", String(next));
-  };
-
 
   if (loading) {
     return (
@@ -114,9 +122,9 @@ export default function InnovationDetailPage() {
     <main className="min-h-screen bg-[#FAF7F2]">
       {/* ================= HERO IMAGE ================= */}
       <section className="relative w-full h-80 sm:h-[420px]">
-        {item.image_url && (
+        {item.images && (
           <Image
-            src={item.image_url}
+            src={item.images[0] ?? "/placeholder.png"}
             alt={item.nama_inovasi}
             fill
             className="object-cover"
@@ -132,49 +140,57 @@ export default function InnovationDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* LEFT CONTENT */}
             <div className="lg:col-span-2 space-y-8">
-              Main Photo
-              <div className="w-full h-[350px] relative rounded-xl overflow-hidden shadow-md">
-                {item.image_url && (
-                  <Image
-                    src={item.image_url}
-                    alt={item.nama_inovasi}
-                    fill
-                    className="object-cover"
-                  />
-                )}
-              </div>
-
               {/* GALLERY */}
               <h2 className="text-xl font-semibold text-slate-900">Innovation Gallery</h2>
-              <div className="relative overflow-hidden rounded-xl shadow-md">
-                <div id="galleryCarousel" data-index="0" className="flex transition-transform duration-700 ease-in-out">
-                  {[item.image_url, "/images/Acer2.jpg", "/images/Acer1.jpg"].map((img, index) => (
-                    <div key={index} className="min-w-full px-2">
-                      <div className="relative w-full h-60 sm:h-72 lg:h-80 rounded-xl overflow-hidden shadow">
-                        <Image src={img || ""} alt={`Gallery ${index}`} fill className="object-cover" />
+              <Carousel
+                className="relative w-full rounded-xl overflow-hidden"
+                plugins={[
+                  Autoplay({
+                    delay: 3500,
+                    stopOnInteraction: false,
+                    stopOnMouseEnter: true,
+                  })
+                ]}
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {item.images.map((img, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative w-full h-60 sm:h-72 lg:h-80">
+                        <Image
+                          src={img ?? "/placeholder.png"}
+                          alt={`Image ${index}`}
+                          className="object-cover rounded-xl"
+                          fill
+                        />
                       </div>
-                    </div>
+                    </CarouselItem>
                   ))}
-                </div>
+                </CarouselContent>
 
-                <button onClick={() => slideGallery(-1)} className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full px-3 py-2 shadow-lg">‹</button>
-                <button onClick={() => slideGallery(1)} className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full px-3 py-2 shadow-lg">›</button>
-              </div>
+                {/* BUTTON CHEVRON */}
+                <CarouselPrevious className="left-2 bg-white/70 backdrop-blur border-none shadow-md hover:bg-white" />
+                <CarouselNext className="right-2 bg-white/70 backdrop-blur border-none shadow-md hover:bg-white" />
+              </Carousel>
+
 
               {/* DETAILS SECTION */}
               <section className="bg-white rounded-xl p-6 shadow-sm space-y-6">
-                <DetailBlock title="Technology Overview" content={item.overview || ""} />
+                <DetailBlock title="Technology Overview" content={htmlToText(item.overview) || ""} />
                 <DetailList
                   title="Technology Features & Specifications"
-                  items={item.features || ""}
+                  items={htmlToText(item.features) || ""}
                 />
                 <DetailBlock
                   title="Potential Application"
-                  content={item.potential_application || ""}
+                  content={htmlToText(item.potential_application) || ""}
                 />
                 <DetailBlock
                   title="Unique Value Proposition"
-                  content={item.unique_value || ""}
+                  content={htmlToText(item.unique_value) || ""}
                 />
 
                 {/* BUTTON MENUJU PAGE UPDATE REQUEST */}
@@ -269,9 +285,47 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
         <h3 className="text-lg font-semibold text-teal-800 mb-4">Key Information</h3>
         {/* <SidebarInfo label="Category" value={item.category} badge /> */}
         <SidebarInfo label="ID Number" value={`INNOV-${item.id}`} />
-        <SidebarInfo label="Status" value="✓ Approved Innovation" badgeGreen />
-        <SidebarInfo label="Inovator" value={item.profiles?.nama ?? "-"} />
+        <SidebarInfo
+          label="Categories"
+          value={
+            <div className="flex flex-wrap gap-2">
+              {item.categories && item.categories.length > 0 ? (
+                <ul className="list-disc list-inside space-y-0.5">
+                  {item.categories.map((cat, idx) => (
+                    <li key={idx}>{cat}</li>
+                  ))}
+                </ul>
+              ) : (
+                "—"
+              )}
+            </div>
+          }
+        />
+        <SidebarInfo label="Inovator" value={item.innovator?.nama ?? "-"} />
+        
         <SidebarInfo label="Location" value={item.asal_inovasi}/>
+        <SidebarInfo
+          label="Social Media"
+          value={
+            <div className="flex gap-3 text-xl mt-1">
+              {item.social?.instagram && (
+                <Link href={item.social.instagram} target="_blank">
+                  <FaInstagram className="hover:text-pink-600 transition-colors" />
+                </Link>
+              )}
+              {item.social?.youtube && (
+                <Link href={item.social.youtube} target="_blank">
+                  <FaYoutube className="hover:text-red-600 transition-colors" />
+                </Link>
+              )}
+              {item.social?.tiktok && (
+                <Link href={item.social.tiktok} target="_blank">
+                  <FaTiktok className="hover:text-black transition-colors" />
+                </Link>
+              )}
+            </div>
+          }
+        />
         <button
           onClick={() => router.push("/contact")}
           className="mt-4 w-full px-4 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors"
@@ -287,11 +341,11 @@ function SidebarInfo({ label, value, badge, badgeGreen }: SidebarInfoProps) {
   return (
     <div className="mb-4">
       <p className="text-xs font-medium text-gray-500 uppercase">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">
+      <div className="mt-1 text-sm font-semibold text-slate-800">
         {badge && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">{value}</span>}
         {badgeGreen && <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full">{value}</span>}
         {!badge && !badgeGreen && value}
-      </p>
+      </div>
     </div>
   );
 }
@@ -308,9 +362,9 @@ function RelatedItems({ related, router }: { related: InnovationItem[]; router: 
             className="cursor-pointer rounded-xl overflow-hidden bg-white shadow-md hover:shadow-lg transition-all duration-500"
           >
             <div className="relative w-full h-56 overflow-hidden rounded-t-xl group">
-              {rel.image_url && (
+              {rel.images && (
               <Image
-                src={rel.image_url} // sesuaikan field API
+                src={rel.images[0] ?? "/placeholder.png"} // sesuaikan field API
                 alt={rel.nama_inovasi}
                 fill
                 className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
@@ -328,4 +382,12 @@ function RelatedItems({ related, router }: { related: InnovationItem[]; router: 
       </div>
     </section>
   );
+}
+
+// Helper
+function htmlToText(html: string) {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return tmp.textContent || "";
 }

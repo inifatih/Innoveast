@@ -4,6 +4,7 @@ import { getPublicInnovations } from "@/app/(MainLayout)/innovation/action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import RichTextViewer from "@/components/Viewer";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -45,10 +46,10 @@ function ListItem({ title, children, href }: ListItemProps) {
 export interface InnovationItem {
   id: string | number;
   nama_inovasi: string;
-  overview?: string;
-  features?: string;
-  potential_application?: string;
-  unique_value?: string;
+  overview: string;
+  features: string;
+  potential_application: string;
+  unique_value: string;
   asal_inovasi?: string;
   created_at: string;
   profiles?: { id: string; nama: string } | null;
@@ -309,8 +310,9 @@ export default function TechOffersPage() {
                       {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
                       {/* Overview Inovasi */}
                       <p className="text-gray-700 text-sm">
-                        {truncate(item.overview, 100)}
+                        {truncate(htmlToText(item.overview), 100)}
                       </p>
+
                     </CardContent>
                   </Link>
                 </Card>
@@ -321,4 +323,12 @@ export default function TechOffersPage() {
       </section>
     </main>
   );
+}
+
+// Helper
+function htmlToText(html: string) {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return tmp.textContent || "";
 }

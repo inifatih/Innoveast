@@ -14,7 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Textarea } from "../ui/textarea";
 import { TiptapEditor } from "./TipTapEditor";
 
 // --------------------
@@ -157,33 +156,36 @@ export default function AddInnovationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Inovator</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors">
+                      <SelectTrigger>
                         <SelectValue placeholder="Pilih inovator" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="bg-white border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors">
+                    <SelectContent>
                       {innovators.map((inv) => (
                         <SelectItem
                           key={inv.id}
-                          value={inv.id}
+                          value={String(inv.id)}
                           className="
-                            hover:bg-orange-500 hover:text-white 
-                            focus:bg-orange-500 focus:text-white 
-                            data-highlighted:bg-orange-500 data-highlighted:text-white
-                            rounded-md
+                            text-gray-700
+                            focus:bg-orange-400 focus:text-white
+                            data-highlighted:bg-orange-400 data-highlighted:text-white 
+                            data-[state=checked]:bg-orange-600 data-[state=checked]:text-white 
                           "
                         >
                           {inv.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
+
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+
 
             {/* Categories */}
             <FormField
