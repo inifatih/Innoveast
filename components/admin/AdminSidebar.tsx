@@ -3,8 +3,8 @@
 import { actionSignOut } from "@/app/auth/logout/action";
 import { cn } from "@/lib/utils";
 import {
+  BadgeAlert,
   FlagIcon,
-  Home,
   HomeIcon,
   LayoutDashboard,
   LogOut,
@@ -26,6 +26,7 @@ export function AdminSidebar() {
     { name: "Inovasi", href: "/admin/innovation", icon: Rocket },
     { name: "Berita", href: "/admin/news", icon: Newspaper },
     { name: "Acara", href: "/admin/events", icon: FlagIcon },
+    { name: "Kategori", href: "/admin/categories", icon: BadgeAlert },
   ];
 
   const handleSignOut = async () => {

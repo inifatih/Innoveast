@@ -1,5 +1,4 @@
 "use client"
-// app/events/page.tsx atau components/Events.tsx
 import { getPublicNews } from "@/app/(MainLayout)/news/action"; // sesuaikan path
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";

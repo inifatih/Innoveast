@@ -1,7 +1,6 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -41,8 +40,8 @@ export async function createNewUser(values: z.infer<typeof FormSchema>) {
     const userId = userData.user.id;
 
     // 2. Insert ke table profiles dengan supabase server (RLS ON)
-    const { error: profileError } = await supabaseAdmin.from("profiles").insert({
-      id: userId,
+    const { error: profileError } = await supabaseAdmin.from("Profiles").insert({
+      user_id: userId,
       is_admin: data.is_admin,
       nama: data.nama || null,
       kontak: data.kontak || null,
@@ -96,8 +95,8 @@ export async function approveInnovator(id: number) {
   const userId = authUser.user.id;
 
   // INSERT PROFILE
-  const { error: insertErr } = await supabaseAdmin.from("profiles").insert({
-    id: userId,
+  const { error: insertErr } = await supabaseAdmin.from("Profiles").insert({
+    user_id: userId,
     nama,
     kontak,
     lokasi,
@@ -126,10 +125,6 @@ export async function approveInnovator(id: number) {
   return { success: true };
 }
 
-
-
-
-
 // =====  ===== ===== ===== ===== ===== =====
 // REJECT INNOVATOR FROM -> PENDING PROFILES
 // =====  ===== ===== ===== ===== ===== =====
@@ -138,9 +133,6 @@ export async function rejectInnovator(id: number) {
 
   return { success: true, message: "Pendaftar ditolak & dihapus." };
 }
-
-
-
 
 // Menampilkan Inovator di Confirm Innovator
 // GET PENDING INNOVATORS
@@ -163,27 +155,43 @@ export async function getPendingInnovators() {
 // Menampilkan Inovator Table Inovator
 // GET INNOVATORS
 export async function getAllInnovators() {
-  const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("profiles")
+  const { data: profiles, error } = await supabaseAdmin
+    .from("Profiles")
     .select("*")
     .eq("is_admin", false)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
 
-  // Map supaya frontend lebih mudah
-  const mapped = data.map(item => ({
-    id: item.id,
-    email: item.email,
-    nama: item.nama,
-    kontak: item.kontak,
-    deskripsi: item.deskripsi,
-    lokasi: item.lokasi,
-    created_at: item.created_at,
-    profiles: Array.isArray(item.profiles) ? item.profiles[0] ?? null : item.profiles ?? null, // ambil object pertama jika ada
-  }));
+  // Ambil email untuk setiap profile
+  const mapped = await Promise.all(
+    profiles.map(async (p) => {
+      console.log("Profile:", p.id, "user_id:", p.user_id);
+      let email = "—";
+      if (p.user_id) {
+        const { data: userData, error: userErr } = await supabaseAdmin.auth.admin.getUserById(p.user_id);
+        console.log("UserData:", userData, "Error:", userErr);
+        if (!userErr && userData?.user) {
+          email = userData.user.email ?? "—";
+        }
+      } else {
+        console.log("user_id kosong, tidak bisa ambil email!")
+      }
+      return {
+        id: p.id,
+        email,
+        nama: p.nama ?? "—",
+        kontak: p.kontak ?? "—",
+        deskripsi: p.deskripsi ?? "—",
+        lokasi: p.lokasi ?? "—",
+        created_at: p.created_at,
+      };
+    })
+  );
+
+  console.log("Final mapped innovators:", mapped);
 
   return mapped;
 }
+

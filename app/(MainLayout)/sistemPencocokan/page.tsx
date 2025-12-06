@@ -1,52 +1,44 @@
 "use client";
 
+import { getPublicInnovations } from "@/app/(MainLayout)/innovation/action";
 import { History, Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-// =============================
-// Interface
-// =============================
-interface Innovation {
+interface InnovationItem {
   id: number;
-  title: string;
-  description: string;
-  categories: string[];
+  nama_inovasi: string;
+  overview: string;
+  features: string;
+  potential_application: string;
+  unique_value: string;
+  asal_inovasi: string;
+  created_at: string;
+  images: string[];
+  categories: (string | null)[];
+  social: {
+    tiktok: string | null;
+    instagram: string | null;
+    youtube: string | null;
+  };
 }
 
-// =============================
-// Dummy Data
-// =============================
-const dummyData: Innovation[] = [
-  { id: 12, title: "Kampung Semanggi", description: "Inovasi Kampung Semanggi merupakan upaya pelestarian kuliner khas Surabaya sekaligus strategi pemberdayaan masyarakat melalui pengembangan kampung wisata, kampung edukasi, dan diversifikasi produk Semanggi. Program ini bertujuan meningkatkan ekonomi warga, mengangkat UMKM lokal, serta menjaga keberlanjutan budaya dan lingkungan.", categories: ["Logistik", "Otomasi"] },
-
-  { id: 13, title: "ASIAP Abon Ikan Asap Sebagai Inovasi SustainableDevelopment Goals (SDGs) Dalam Konsep GreenEconomy Berbasis Ekologi Di Kenjeran Surabaya", description: "Inovasi pengolahan ikan asap Kenjeran menjadi abon bernilai tambah tinggi, berdaya simpan panjang, ramah lingkungan, dan memperkuat ekonomi pesisir berbasis SDGs.", categories: ["AI", "Maintenance"] },
-
-  { id: 14, title: "Pemanfaatan Limbah Kulit Nanas sebagai POC untuk Peningkatan Produksi Padi", description: "Inovasi ini mengolah limbah kulit nanas menjadi pupuk organik cair (POC) kaya enzim, vitamin, dan unsur hara untuk meningkatkan kualitas dan kuantitas hasil panen padi, sekaligus mengurangi ketergantungan petani terhadap pupuk kimia.", categories: ["Lingkungan", "Kimia"] },
-
-  { id: 15, title: "JANJI CINTA (Jajanan Jeli Inovatif kaya Colagen Aktivator, Protein, Vitamin C, A, Trace Mineral dan Anti Oksidan) - MORIGLOW BITES", description: "JANJI CINTA – Moriglow Bites adalah jelly superfood berbahan kelor dengan nilai nutrisi tinggi dan potensi pasar besar (kesehatan, pangan fungsional, dan oleh-oleh premium). Produk ini menawarkan margin tinggi, bahan baku murah, dan permintaan pasar meningkat untuk suplemen alami.", categories: ["Robotik", "Manufaktur"] },
-
-  { id: 16, title: '"MIKOPLUS" Tameng dan Penerobos di Sistem Perakaran Tanaman', description: "MIKOPLUS adalah inovasi pupuk organik plus berbasis jamur Mikoriza yang berfungsi sebagai tameng dan penerobos pada sistem perakaran tanaman. Produk ini meningkatkan ketahanan tanaman terhadap kekeringan, menekan biaya pupuk kimia, serta memperbaiki kesuburan tanah secara berkelanjutan.", categories: ["Robotik", "Manufaktur"] },
-
-  { id: 17, title: "Dari Sereh Wangi ke Deodoran Spray: Inovasi Berkelanjutan untuk Kesehatan dan Kewirausahaan", description: "Deodoran alami berbasis tawas dan minyak sereh wangi untuk mengatasi bau badan remaja sekaligus menciptakan peluang kewirausahaan bagi siswa SMKN 1 Kalitengah. Memanfaatkan herbal lokal Lamongan yang melimpah, aman untuk kulit, dan proses produksi murah serta skalabel.", categories: ["Robotik", "Manufaktur"] },
-
-  { id: 18, title: "LONTARVERSE: Inovasi Sirkular Milenial untuk Energi Terbarukan, Pangan Lokal, dan Desa Masa Depan", description: "Gerakan inovasi sirkular milenial yang menggabungkan energi terbarukan, pangan lokal, dan desa masa depan dalam satu ekosistem berkelanjutan. Mengubah potensi pohon lontar menjadi energi, pangan, dan nilai ekonomi kreatif berbasis kearifan lokal.", categories: ["Robotik", "Manufaktur"] },
-
-  { id: 19, title: "Bricket Dari Limbah Kopi", description: "Inovasi ini mengolah limbah kopi (kayu, kulit, daun) di lingkungan SDN Gelang 07—yang sebelumnya tidak termanfaatkan—menjadi briket biomassa sebagai energi alternatif terbarukan. Berbasis pendidikan lingkungan dan model ekonomi sirkular sederhana.", categories: ["Robotik", "Manufaktur"] },
-];
 
 // =============================
 // Normalizer
 // =============================
-const normalize = (t: string) =>
+const normalize = (t: string): string =>
   t.toLowerCase().replace(/[^a-z0-9 ]/g, "");
 
 // =============================
 // Levenshtein for fuzzy
 // =============================
-const levenshtein = (a: string, b: string) => {
+const levenshtein = (a: string, b: string): number => {
   const m = a.length, n = b.length;
-  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    Array(n + 1).fill(0)
+  );
 
   for (let i = 0; i <= m; i++) dp[i][0] = i;
   for (let j = 0; j <= n; j++) dp[0][j] = j;
@@ -66,44 +58,55 @@ const levenshtein = (a: string, b: string) => {
   return dp[m][n];
 };
 
-const fuzzyWordMatch = (text: string, word: string) =>
-  text.includes(word) || text.split(" ").some((w) => levenshtein(w, word) <= 1);
+const fuzzyWordMatch = (text: string, word: string): boolean =>
+  text.includes(word) ||
+  text.split(" ").some((w: string) => levenshtein(w, word) <= 1);
+
 
 // =============================
 // ⭐ SMART SEMANTIC SEARCH
 // =============================
-function semanticSearch(query: string, data: Innovation[]) {
+function semanticSearch(
+  query: string,
+  data: InnovationItem[]
+): (InnovationItem & { score: number })[] {
+
   const q = normalize(query);
   const words = q.split(" ").filter((w) => w.length > 2);
 
-  const isSpecific = words.length >= 2; // <= SMART DETECTION
+  const isSpecific = words.length >= 2;
 
   return data
-    .map((item) => {
-      const title = normalize(item.title);
-      const desc = normalize(item.description);
+    .map((item: InnovationItem) => {
+      const title = normalize(item.nama_inovasi);
+      const desc = normalize(item.overview);
+      const feature = normalize(item.features ?? "");
+      const potential = normalize(item.potential_application ?? "");
+      const unique = normalize(item.unique_value ?? "");
+      const asal = normalize(item.asal_inovasi ?? "");
       const cats = normalize(item.categories.join(" "));
 
       let score = 0;
 
-      words.forEach((w) => {
-        // TITLE
+      words.forEach((w: string) => {
+        // title
         if (title.includes(w)) score += isSpecific ? 70 : 40;
         else if (fuzzyWordMatch(title, w)) score += isSpecific ? 40 : 25;
 
-        // DESCRIPTION
+        // overview/desc
         if (desc.includes(w)) score += isSpecific ? 60 : 35;
         else if (fuzzyWordMatch(desc, w)) score += isSpecific ? 30 : 15;
 
-        // CATEGORY
-        if (cats.includes(w)) score += isSpecific ? 35 : 20;
+        // features, potential, unique value, asal inovasi
+        const meta = `${feature} ${potential} ${unique} ${asal} ${cats}`;
+        if (meta.includes(w)) score += isSpecific ? 45 : 25;
       });
 
-      // PENALTI UNTUK KETIDAKSESUAIAN PADA QUERY SPESIFIK
+      // Penalti
       if (isSpecific) {
-        const joined = `${title} ${desc} ${cats}`;
-        const missingWords = words.filter((w) => !joined.includes(w));
-        score -= missingWords.length * 25;
+        const joined = `${title} ${desc} ${feature} ${potential} ${unique} ${asal} ${cats}`;
+        const missing = words.filter((w) => !joined.includes(w));
+        score -= missing.length * 20;
       }
 
       return { ...item, score };
@@ -118,11 +121,41 @@ function semanticSearch(query: string, data: Innovation[]) {
 export default function SistemPencocokanPage() {
   const [search, setSearch] = useState("");
   const [focus, setFocus] = useState(false);
+  const [data, setData] = useState<InnovationItem[]>([]);
 
-  const filtered = search.trim() ? semanticSearch(search, dummyData) : [];
+  // ============= Fetch Supabase Data ============
+  useEffect(() => {
+    async function load(): Promise<void> {
+      const raw = await getPublicInnovations();
+
+      // Sesuaikan dengan struktur semanticSearch()
+      const mapped: InnovationItem[] = raw.map((item) => ({
+        id: item.id,
+        nama_inovasi: item.nama_inovasi,
+        overview: item.overview ?? "",
+        features: item.features ?? "",
+        potential_application: item.potential_application ?? "",
+        unique_value: item.unique_value ?? "",
+        asal_inovasi: item.asal_inovasi ?? "",
+        created_at: item.created_at,
+        social: item.social,
+
+        // ambil gambar pertama saja
+        images: item.images ?? [],
+        categories: item.categories ?? [],
+      }));
+
+      setData(mapped);
+    }
+
+    load();
+  }, []);
+
+  const filtered = search.trim() ? semanticSearch(search, data) : [];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+
       {/* HERO */}
       <section className="relative w-full py-20 sm:py-28 bg-linear-to-br from-blue-700 via-indigo-700 to-purple-700 text-white text-center">
         <h1 className="text-3xl sm:text-5xl font-extrabold px-4">
@@ -133,7 +166,7 @@ export default function SistemPencocokanPage() {
         </p>
       </section>
 
-      {/* SEARCH BOX */}
+      {/* SEARCH */}
       <div className="max-w-3xl mx-auto -mt-10 sm:-mt-12 px-4 relative">
         <div
           className={`
@@ -170,7 +203,7 @@ export default function SistemPencocokanPage() {
                   className="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
                 >
                   <History className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm sm:text-base">{item.title}</span>
+                  <span className="text-sm sm:text-base">{item.nama_inovasi}</span>
                 </Link>
               ))
             )}
@@ -199,10 +232,11 @@ export default function SistemPencocokanPage() {
                 "
               >
                 <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3 text-indigo-700">
-                  {item.title}
+                  {item.nama_inovasi}
                 </h3>
+
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  {item.description}
+                  {item.overview}
                 </p>
 
                 <div className="flex flex-wrap gap-2 mt-4">
@@ -216,6 +250,14 @@ export default function SistemPencocokanPage() {
                     </span>
                   ))}
                 </div>
+
+                {item.images && (
+                  <Image
+                    src={item.images[0]}
+                    alt={item.nama_inovasi}
+                    className="mt-4 rounded-xl w-full h-40 object-cover"
+                  />
+                )}
               </Link>
             ))}
           </div>

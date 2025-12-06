@@ -132,7 +132,7 @@ export default function InnovationDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* LEFT CONTENT */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Main Photo */}
+              Main Photo
               <div className="w-full h-[350px] relative rounded-xl overflow-hidden shadow-md">
                 {item.image_url && (
                   <Image

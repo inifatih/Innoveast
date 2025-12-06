@@ -52,9 +52,9 @@ export async function updateSession(request: NextRequest) {
   // 3. Ambil role admin dari profiles
   // =====================================================
   const { data: profile, error: profileError } = await supabase
-    .from("profiles")
+    .from("Profiles")
     .select("is_admin")
-    .eq("id", session.sub)
+    .eq("user_id", session.sub)
     .single();
 
   // Jika gagal ambil profile / tidak ada profile → tidak boleh masuk

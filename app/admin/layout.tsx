@@ -18,9 +18,9 @@ export default async function AdminLayout({
 
   // ❗ Ambil role dari profiles
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("Profiles")
     .select("is_admin")
-    .eq("id", user.id)
+    .eq("user_id", user.id)
     .single();
 
   // ❗ Jika bukan admin → tendang ke halaman utama

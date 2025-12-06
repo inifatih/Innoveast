@@ -58,7 +58,7 @@ export default function AddInnovator() {
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl">
-      <CardHeader className="bg-orange-50 border-b">
+      <CardHeader className="bg-orange-50 shadow-sm">
         <CardTitle className="text-orange-600 text-xl font-semibold">
           Tambah Inovator Baru
         </CardTitle>
@@ -77,7 +77,7 @@ export default function AddInnovator() {
                     <FormLabel className="text-gray-800">Email</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                         placeholder="Email pengguna"
                         {...field}
                       />
@@ -101,7 +101,7 @@ export default function AddInnovator() {
                       <Input
                         type="password"
                         placeholder="*********"
-                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                         {...field}
                       />
                     </FormControl>
@@ -122,7 +122,7 @@ export default function AddInnovator() {
                     <FormLabel className="text-gray-800">Nama</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                         placeholder="Nama lengkap"
                         {...field}
                       />
@@ -144,7 +144,7 @@ export default function AddInnovator() {
                     <FormLabel className="text-gray-800">Kontak</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                         placeholder="08xxxxxxxxxx"
                         {...field}
                       />
@@ -166,7 +166,7 @@ export default function AddInnovator() {
                     <FormLabel className="text-gray-800">Lokasi</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                         placeholder="Lokasi inovator"
                         {...field}
                       />
@@ -188,7 +188,7 @@ export default function AddInnovator() {
                     <FormLabel className="text-gray-800">Deskripsi</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-50 focus-visible:ring-orange-500"
+                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                         placeholder="Deskripsi inovator"
                         {...field}
                       />

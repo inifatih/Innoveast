@@ -62,9 +62,9 @@ export default function Navbar() {
       if (!currentUser) return;
 
       const { data: userProfile } = await supabase
-        .from("profiles")
+        .from("Profiles")
         .select("is_admin")
-        .eq("id", currentUser.id)
+        .eq("user_id", currentUser.id)
         .single();
 
       setIsAdmin(userProfile?.is_admin === true);

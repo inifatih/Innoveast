@@ -78,7 +78,7 @@ export default function AddNews() {
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl">
-      <CardHeader className="bg-orange-50 border-b">
+      <CardHeader className="bg-orange-50 shadow-sm">
         <CardTitle className="text-orange-600 text-xl font-semibold">Tambah Berita</CardTitle>
       </CardHeader>
 

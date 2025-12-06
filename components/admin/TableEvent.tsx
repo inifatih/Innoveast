@@ -51,8 +51,8 @@ export default function TableEvent() {
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl mt-6">
-      <CardHeader className="bg-green-50 border-b">
-        <CardTitle className="text-xl font-semibold text-green-600">
+      <CardHeader className="bg-orange-50 shadow-sm">
+        <CardTitle className="text-orange-600 text-xl font-semibold">
           Daftar Event
         </CardTitle>
       </CardHeader>

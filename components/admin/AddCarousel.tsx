@@ -77,8 +77,8 @@ export default function AddCarousel() {
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl">
-      <CardHeader className="bg-orange-50 border-b">
-        <CardTitle className="text-xl font-semibold text-orange-600">
+      <CardHeader className="bg-orange-50 shadow-sm">
+        <CardTitle className="text-orange-600 text-xl font-semibold">
           Tambahkan Carousel Baru
         </CardTitle>
       </CardHeader>
@@ -102,7 +102,7 @@ export default function AddCarousel() {
                       <FormControl>
                         <Input
                           placeholder="Masukkan judul"
-                          className="bg-gray-50"
+                          className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                           {...field}
                         />
                       </FormControl>
@@ -121,7 +121,7 @@ export default function AddCarousel() {
                       <FormControl>
                         <Input
                           placeholder="https://contoh.com"
-                          className="bg-gray-50"
+                          className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                           {...field}
                         />
                       </FormControl>
@@ -140,7 +140,7 @@ export default function AddCarousel() {
                       <FormControl>
                         <Input
                           type="number"
-                          className="bg-gray-50"
+                          className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                           placeholder="0"
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -165,7 +165,7 @@ export default function AddCarousel() {
                       <FormControl>
                         <Textarea
                           placeholder="Subjudul (opsional)"
-                          className="bg-gray-50 min-h-[100px]"
+                          className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                           {...field}
                         />
                       </FormControl>
@@ -185,7 +185,7 @@ export default function AddCarousel() {
                         <Input
                           type="file"
                           accept="image/*"
-                          className="bg-gray-50"
+                          className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
                           onChange={(e) => field.onChange(e.target.files?.[0])}
                         />
                       </FormControl>

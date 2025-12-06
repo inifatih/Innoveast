@@ -50,8 +50,8 @@ export default function TableNews() {
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl mt-6">
-      <CardHeader className="bg-purple-50 border-b">
-        <CardTitle className="text-xl font-semibold text-purple-600">
+      <CardHeader className="bg-orange-50 shadow-sm">
+        <CardTitle className="text-orange-600 text-xl font-semibold">
           Daftar Berita
         </CardTitle>
       </CardHeader>

@@ -2,11 +2,19 @@
 
 import { createClient } from "@/lib/supabase/server";
 
+type CategoryItem = {
+  nama_kategori: string | null;
+};
+
+type InnovationCategoryJoin = {
+  Categories: CategoryItem | CategoryItem[] | null;
+};
+
 // ============= GET ALL INNOVATIONS =============
 export async function getPublicInnovations() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase 
+  const { data, error } = await supabase
     .from("Innovations")
     .select(`
       id,
@@ -17,18 +25,37 @@ export async function getPublicInnovations() {
       potential_application,
       unique_value,
       asal_inovasi,
-      id_inovator,
-      image_path,
-      profiles(id, nama)
+      tiktok_url,
+      instagram_url,
+      youtube_url,
+      Profiles(id, nama),
+
+      Innovation_categories (
+        Categories(nama_kategori)
+      ),
+
+      Innovation_images(image_path)
     `)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
 
   const mapped = data.map((item) => {
-    const publicURL = item.image_path
-      ? supabase.storage.from("assets").getPublicUrl(item.image_path).data.publicUrl
-      : null;
+    const images =
+      item.Innovation_images?.map((img) =>
+        supabase.storage.from("assets").getPublicUrl(img.image_path).data.publicUrl
+      ) || [];
+
+    const categories =
+      (item.Innovation_categories as InnovationCategoryJoin [] | null)
+        ?.flatMap((catJoin) => {
+          const cats = catJoin.Categories;
+          if (!cats) return [];
+          return Array.isArray(cats) ? cats : [cats];
+        })
+        .map((cat) => cat.nama_kategori)
+        .filter((name) => Boolean(name)) || [];
+
 
     return {
       id: item.id,
@@ -39,7 +66,13 @@ export async function getPublicInnovations() {
       unique_value: item.unique_value,
       asal_inovasi: item.asal_inovasi,
       created_at: item.created_at,
-      image_url: publicURL,
+      social: {
+        tiktok: item.tiktok_url,
+        instagram: item.instagram_url,
+        youtube: item.youtube_url,
+      },
+      images,
+      categories,
     };
   });
 
@@ -60,16 +93,19 @@ export async function getInnovationById(id: string) {
       potential_application,
       unique_value,
       asal_inovasi,
-      image_path,
-      created_at
+      created_at,
+      Innovation_images(image_path)
     `)
     .eq("id", id)
     .single();
 
   if (error) throw error;
 
-  const image_url = data.image_path
-    ? supabase.storage.from("assets").getPublicUrl(data.image_path).data.publicUrl
+  const filePath =
+    data.Innovation_images?.[0]?.image_path || null;
+
+  const image_url = filePath
+    ? supabase.storage.from("assets").getPublicUrl(filePath).data.publicUrl
     : "/images/default.jpg";
 
   return {
@@ -84,3 +120,4 @@ export async function getInnovationById(id: string) {
     created_at: data.created_at,
   };
 }
+
