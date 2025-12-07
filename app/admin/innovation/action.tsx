@@ -4,7 +4,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createInnovation(formData: FormData) {
-  const supabase = await createClient();
 
   // Ambil data umum
   const nama_inovasi = formData.get("nama_inovasi") as string;
@@ -27,7 +26,7 @@ export async function createInnovation(formData: FormData) {
   const imageFiles = formData.getAll("images") as File[];
 
   // 1. Insert Innovations
-  const { data: innovation, error: insertError } = await supabase
+  const { data: innovation, error: insertError } = await supabaseAdmin
     .from("Innovations")
     .insert({
       nama_inovasi,
@@ -51,7 +50,7 @@ export async function createInnovation(formData: FormData) {
   // 2. Ambil ID kategori dari nama
   let categoryIds: number[] = [];
   if (categoryNames.length > 0) {
-    const { data: categoryData, error: catError } = await supabase
+    const { data: categoryData, error: catError } = await supabaseAdmin
       .from("Categories")
       .select("id")
       .in("nama_kategori", categoryNames);
@@ -67,7 +66,7 @@ export async function createInnovation(formData: FormData) {
       id_categories,
     }));
 
-    const { error: categoryError } = await supabase
+    const { error: categoryError } = await supabaseAdmin
       .from("Innovation_categories")
       .insert(categoryRows);
 
@@ -82,13 +81,13 @@ export async function createInnovation(formData: FormData) {
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `Innovations/${innovationId}/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from("assets")
       .upload(filePath, file, { contentType: file.type });
 
     if (uploadError) throw uploadError;
 
-    const { error: imgInsertError } = await supabase
+    const { error: imgInsertError } = await supabaseAdmin
       .from("Innovation_images")
       .insert({
         id_innovations: innovationId,
