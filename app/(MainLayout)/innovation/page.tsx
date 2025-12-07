@@ -131,7 +131,7 @@ export default function TechOffersPage() {
       {/* HERO */}
       <section className="relative w-full h-[300px] sm:h-[400px] overflow-hidden">
         <Image
-          src="/images/HAI1.JPG"
+          src="/images/headerApprovedInnovation.png"
           alt="Innovation Cover"
           fill
           className="object-cover brightness-75"
