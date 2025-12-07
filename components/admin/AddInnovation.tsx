@@ -162,7 +162,7 @@ export default function AddInnovationForm() {
                         <SelectValue placeholder="Pilih inovator" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {innovators.map((inv) => (
                         <SelectItem
                           key={inv.id}

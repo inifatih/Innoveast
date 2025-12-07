@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { getInnovationByIdForUpdate, updateInnovation } from "@/app/admin/innovation/action";
+import { getCategories } from "@/app/admin/categories/action";
+import { getInnovationByIdForUpdate, getInovators, updateInnovation } from "@/app/admin/innovation/action";
 
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -38,7 +39,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"success" | "error" | "">("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
+  const [imagesPreview, setImagesPreview] = useState<string[]>([]);
 
   const form = useForm<InnovationForm>({
     resolver: zodResolver(InnovationSchema),
@@ -51,7 +52,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
       unique_value: "",
       inovator: "",
       categories: [],
-      images: [],
+      images: [] as File[],
       tiktok_url: "",
       instagram_url: "",
       youtube_url: "",
@@ -60,56 +61,61 @@ export default function EditInnovationForm({ id }: { id: number}) {
 
   // Load Default Values by ID
   useEffect(() => {
-    async function loadData() {
-      try {
-        const innovationDetail = await getInnovationByIdForUpdate(id);
+  async function loadData() {
+    try {
+      // 1. Ambil semua kategori dari server
+      const allCategories = await getCategories();
+      setCategories(allCategories);
 
-        // Ambil kategori tanpa null
-        const safeCategories = (innovationDetail.categories ?? []).filter(
-          (cat): cat is string => Boolean(cat)
-        );
+      // 2. Ambil semua inovator (Profiles dengan is_admin == false)
+      const allInnovators = await getInovators();
+      setInnovators(allInnovators);
 
-        // Reset form
-        form.reset({
-          nama_inovasi: innovationDetail.nama_inovasi ?? "",
-          asal_inovasi: innovationDetail.asal_inovasi ?? "",
-          overview: innovationDetail.overview ?? "",
-          features: innovationDetail.features ?? "",
-          potential_application: innovationDetail.potential_application ?? "",
-          unique_value: innovationDetail.unique_value ?? "",
-          inovator: innovationDetail.innovator?.id ?? "",
-          categories: safeCategories, // ini array string
-          images: [], // file input tetap kosong
-          tiktok_url: innovationDetail.social?.tiktok ?? "",
-          instagram_url: innovationDetail.social?.instagram ?? "",
-          youtube_url: innovationDetail.social?.youtube ?? "",
-        });
+      // 3. Ambil detail inovasi
+      const innovationDetail = await getInnovationByIdForUpdate(id);
 
-        // Set opsi untuk select/checkbox
-        if (innovationDetail.innovator) {
-          setInnovators([
-            { id: innovationDetail.innovator.id, name: innovationDetail.innovator.nama }
-          ]);
-        }
+      // 4. Ambil kategori yang valid dari data lama
+      const safeCategories = (innovationDetail.categories ?? []).filter(
+        (cat): cat is string => Boolean(cat)
+      );
 
-        setCategories(
-          safeCategories.map((cat) => ({ id: cat, nama_kategori: cat }))
-        );
+      // 5. Reset form dengan default values
+      form.reset({
+        nama_inovasi: innovationDetail.nama_inovasi ?? "",
+        asal_inovasi: innovationDetail.asal_inovasi ?? "",
+        overview: innovationDetail.overview ?? "",
+        features: innovationDetail.features ?? "",
+        potential_application: innovationDetail.potential_application ?? "",
+        unique_value: innovationDetail.unique_value ?? "",
+        inovator: innovationDetail.innovator?.id ?? "",
+        categories: safeCategories, // array string, akan otomatis checked di form
+        images: [], // file input tetap kosong
+        tiktok_url: innovationDetail.social?.tiktok ?? "",
+        instagram_url: innovationDetail.social?.instagram ?? "",
+        youtube_url: innovationDetail.social?.youtube ?? "",
+      });
 
-        setSelectedFiles([]); // preview kosong
-      } catch (err) {
-        console.error("Failed to load innovation detail:", err);
-      }
+      // 6. Set preview images dari data lama
+      setImagesPreview(innovationDetail.images ?? []);
+
+      // 7. Reset selected files untuk upload baru
+      setSelectedFiles([]);
+
+    } catch (err) {
+      console.error("Failed to load innovation detail:", err);
     }
+  }
 
-    loadData();
-  }, [id, form]);
+  loadData();
+}, [id, form]);
+
 
 
   // Update
   const onSubmit = async (values: InnovationForm) => {
     setLoading(true);
     setStatus("");
+
     try {
       const formData = new FormData();
 
@@ -126,7 +132,12 @@ export default function EditInnovationForm({ id }: { id: number}) {
       formData.append("youtube_url", values.youtube_url || "");
 
       values.categories.forEach((cat) => formData.append("categories", cat));
-      values.images?.forEach((file) => formData.append("images", file));
+
+      // 1️⃣ File baru yang diupload
+      selectedFiles.forEach((file) => formData.append("images", file));
+
+      // 2️⃣ Gambar lama yang tetap ada
+      imagesPreview.forEach((url) => formData.append("existing_images[]", url));
 
       await updateInnovation(id, formData);
 
@@ -139,6 +150,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
       setLoading(false);
     }
   };
+
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl">
@@ -188,15 +200,24 @@ export default function EditInnovationForm({ id }: { id: number}) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Inovator</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih inovator" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {innovators.map((inv) => (
-                        <SelectItem key={inv.id} value={inv.id}>
+                        <SelectItem
+                          key={inv.id}
+                          value={String(inv.id)}
+                          className={`
+                            text-gray-700
+                            focus:bg-orange-400 focus:text-white
+                            data-highlighted:bg-orange-400 data-highlighted:text-white
+                            ${field.value === String(inv.id) ? "bg-orange-500 text-white" : ""}
+                          `}
+                        >
                           {inv.name}
                         </SelectItem>
                       ))}
@@ -215,32 +236,46 @@ export default function EditInnovationForm({ id }: { id: number}) {
                 <FormItem>
                   <FormLabel>Kategori</FormLabel>
                   <FormDescription>Pilih kategori yang sesuai</FormDescription>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 p-2">
                     {categories.map((cat) => {
-                      const checked = field.value.includes(cat.nama_kategori);
+                      // Cek apakah kategori ini termasuk default value (field.value)
+                      const checked = field.value?.includes(cat.nama_kategori);
+
                       return (
-                        <label key={cat.id} className={`cursor-pointer p-2 rounded-md ${checked ? "bg-orange-500 text-white" : "bg-gray-200"}`}>
+                        <label
+                          key={cat.id}
+                          className={`
+                            flex items-center justify-center gap-2 cursor-pointer
+                            rounded-md px-3 py-2 font-semibold text-sm transition-colors
+                            ${checked ? "bg-orange-500 text-white" : "bg-gray-200 text-gray-800"}
+                            hover:bg-orange-100
+                            active:bg-orange-500 active:text-white
+                          `}
+                        >
                           <input
                             type="checkbox"
                             className="hidden"
                             checked={checked}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                field.onChange([...field.value, cat.nama_kategori]);
+                                field.onChange([...(field.value || []), cat.nama_kategori]);
                               } else {
                                 field.onChange(field.value.filter((v) => v !== cat.nama_kategori));
                               }
                             }}
                           />
-                          {cat.nama_kategori}
+                          <span>{cat.nama_kategori}</span>
                         </label>
                       );
                     })}
                   </div>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
 
             {/* Overview */}
             <FormField
@@ -347,50 +382,83 @@ export default function EditInnovationForm({ id }: { id: number}) {
               control={form.control}
               name="images"
               render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Media Inovasi (Gambar / Video)</FormLabel>
-                    <FormControl>
-                        <Input
-                        type="file"
-                        multiple
-                        accept="image/*,video/*"
-                        onChange={(e) => {
-                            const files = Array.from(e.target.files || []);
-                            setSelectedFiles((prev) => {
-                              const updated = [...prev, ...files];
-                              field.onChange(updated); // update react-hook-form dengan nilai terbaru
-                              return updated;
-                            });
-                        }}
-                        />
-                    </FormControl>
+                <FormItem>
+                  <FormLabel>Media Inovasi (Gambar / Video)</FormLabel>
+                  
+                  {/* Input file baru */}
+                  <FormControl>
+                    <Input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setSelectedFiles((prev) => {
+                          const updated = [...prev, ...files];
+                          field.onChange(updated); // update react-hook-form dengan file baru
+                          return updated;
+                        });
+                      }}
+                    />
+                  </FormControl>
 
-                    {/* Preview selected files */}
-                    {selectedFiles.length > 0 && (
-                        <ul className="mt-2 space-y-1 text-sm">
-                        {selectedFiles.map((file, idx) => (
-                            <li key={idx} className="flex items-center justify-between gap-2">
-                            <span>{file.name}</span>
-                            <button
-                                type="button"
-                                className="text-red-500 font-bold"
-                                onClick={() => {
-                                const newFiles = selectedFiles.filter((_, i) => i !== idx);
-                                setSelectedFiles(newFiles);
-                                field.onChange(newFiles); // update react-hook-form
-                                }}
-                            >
-                                X
-                            </button>
-                            </li>
-                        ))}
-                        </ul>
-                    )}
+                  {/* Preview gambar lama */}
+                  {imagesPreview.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {imagesPreview.map((url, idx) => (
+                        <div key={idx} className="relative w-24 h-24">
+                          <img
+                            src={url}
+                            alt={`Image ${idx}`}
+                            className="w-full h-full object-cover rounded border"
+                          />
+                          <button
+                            type="button"
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-white hover:text-red-800 cursor-pointer"
+                            onClick={() => {
+                              // hapus image lama dari preview
+                              setImagesPreview(imagesPreview.filter((img) => img !== url));
+                            }}
+                          >
+                            x
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-                />
+                  {/* Preview file baru */}
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedFiles.map((file, idx) => (
+                        <div key={idx} className="relative w-24 h-24">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            className="w-full h-full object-cover rounded border"
+                          />
+                          <button
+                            type="button"
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                            onClick={() => {
+                              const newFiles = selectedFiles.filter((_, i) => i !== idx);
+                              setSelectedFiles(newFiles);
+                              field.onChange(newFiles); // update react-hook-form
+                            }}
+                          >
+                            x
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
 
             {/* Submit */}
             <div className="flex gap-4 items-center">

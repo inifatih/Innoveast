@@ -10,6 +10,11 @@ export const metadata: Metadata = {
     template: "%s | Marketplace Inovasi BRIDA Jatim",
   },
   description: "Menawarkan inovasi milik Badan Riset dan Inovasi Daerah (BRIDA) Jawa Timur.",
+  icons: {
+    icon: "/images/icon.jpg",
+    shortcut: "/images/icon.jpg",
+    apple: "/images/icon.jpg"
+  }
 };
 
 export default async function RootLayout({
