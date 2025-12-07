@@ -13,7 +13,7 @@ export default function MarketplacePage() {
         {/* Hero Image Placeholder */}
         <div className="absolute inset-0 bg-gray-200">
           {/* Ganti dengan Image Next nanti */}
-          <Image src="/images/GS1.jpg" alt="Innovation News Hero" fill className="object-cover" />
+          <Image src="/images/GS1.JPG" alt="Innovation News Hero" fill className="object-cover" />
         </div>
 
         {/* Overlay */}
@@ -49,7 +49,7 @@ export default function MarketplacePage() {
           </div>
           <div className="mt-4 h-36 bg-gray-200 rounded-lg relative overflow-hidden">
             <Image
-              src="/images/GS1.jpg"
+              src="/images/GS1.JPG"
               alt="gambar1"
               fill
               className="object-cover"
@@ -73,7 +73,7 @@ export default function MarketplacePage() {
           </div>
           <div className="mt-4 h-36 bg-gray-200 rounded-lg relative overflow-hidden">
             <Image
-              src="/images/GS2.jpg"
+              src="/images/GS2.JPG"
               alt="gambar1"
               fill
               className="object-cover"
