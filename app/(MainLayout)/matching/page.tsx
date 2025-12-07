@@ -67,7 +67,7 @@ export default function InovasiMatchingPage() {
               {/* MIDDLE LAYER */}
               <div className="absolute right-4 top-4 w-[260px] h-40 sm:w-[460px] sm:h-[260px] md:w-[560px] md:h-80 transform rotate-1 rounded-2xl overflow-hidden shadow-2xl border border-white/8">
                 <Image
-                  src="/images/Carosel1.jpg"
+                  src="/images/marketplace.png"
                   alt="Mockup Middle - chart"
                   fill
                   style={{ objectFit: "cover" }}
@@ -78,7 +78,7 @@ export default function InovasiMatchingPage() {
               {/* FRONT LAYER */}
               <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-[280px] h-40 sm:w-[480px] sm:h-[260px] md:w-[620px] md:h-[350px] transform translate-y-0 rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-white">
                 <Image
-                  src="/images/marketplace.png"
+                  src="/images/Carosel1.jpg"
                   alt="Mockup Front - monitor"
                   fill
                   style={{ objectFit: "cover" }}

@@ -23,7 +23,7 @@ export default function AboutPage() {
     <main>
       {/* ================= COVER ================= */}
       <section className="relative w-full h-80 sm:h-[420px] overflow-hidden shadow-xl border-b">
-        <Image src="/images/ABT1.jpg" alt="About Cover" fill className="object-cover brightness-75" />
+        <Image src="/images/aboutHero.png" alt="About Cover" fill className="object-cover brightness-75" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold drop-shadow-lg">About Orbit Jatim</h1>
           <p className="text-lg sm:text-xl max-w-2xl mt-3 drop-shadow">
