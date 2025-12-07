@@ -18,7 +18,7 @@ export interface InnovationItem {
   profiles?: { id: string; nama: string } | null;
 
   // Kolom baru
-  image_url?: string | null;
+  images?: string[];
 }
 
 export type NewsList = InnovationItem[];
@@ -95,9 +95,9 @@ export default function InnovationSection() {
                   >
                     {/* Image */}
                     <div className="relative w-full h-56">
-                      {item.image_url && (
+                      {item.images && (
                         <Image
-                          src={item.image_url}
+                          src={item.images[0]}
                           alt={item.nama_inovasi}
                           fill
                           className="object-cover"
@@ -120,7 +120,7 @@ export default function InnovationSection() {
                       {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
                       {/* Overview Inovasi */}
                       <p className="text-gray-700 text-sm">
-                        {truncate(item.overview, 100)}
+                        {truncate(htmlToText(item.overview), 100)}
                       </p>
                     </CardContent>
                   </Link>
@@ -131,5 +131,13 @@ export default function InnovationSection() {
       </div>
     </section>
   )
+}
+
+// Helper
+function htmlToText(html: string) {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return tmp.textContent || "";
 }
 

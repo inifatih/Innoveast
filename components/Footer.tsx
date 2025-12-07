@@ -14,28 +14,8 @@ export default function Footer() {
 
   <ul className="space-y-2 text-gray-400 text-sm">
     <li>
-      <Link href="/about?section=who" className="hover:text-white">
-        Siapa Kami
-      </Link>
-    </li>
-    <li>
-      <Link href="/about?section=what" className="hover:text-white">
-        Apa yang Kami Lakukan
-      </Link>
-    </li>
-    <li>
-      <Link href="/about?section=why" className="hover:text-white">
-        Mengapa Ini Penting
-      </Link>
-    </li>
-    <li>
-      <Link href="/about?section=stand" className="hover:text-white">
-        Nilai yang Kami Junjung
-      </Link>
-    </li>
-    <li>
-      <Link href="/about?section=journey" className="hover:text-white">
-        Perjalanan Kami
+      <Link href="/about" className="hover:text-white">
+        Tentang Orbit Jatim
       </Link>
     </li>
   </ul>
@@ -86,3 +66,4 @@ export default function Footer() {
     </footer>
   );
 }
+

@@ -44,6 +44,7 @@ export default function TableInnovation() {
   const [data, setData] = useState<InnovationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch data
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -60,6 +61,22 @@ export default function TableInnovation() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleEdit = (id: number) => {
+    console.log("Edit ID:", id);
+    // misal redirect ke halaman edit
+    router.push(`/admin/innovation/edit/${id}`);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus inovasi ini?")) return;
+    try {
+      await deleteInnovationById(id); // sesuaikan dengan fungsi delete di action
+      fetchData(); // refresh data setelah delete
+    } catch (err) {
+      console.error("Error deleting innovation:", err);
+    }
+  };
 
   return (
     <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl mt-6">
@@ -89,6 +106,7 @@ export default function TableInnovation() {
                 <TableHead className="text-gray-700">Inovator</TableHead>
                 <TableHead className="text-gray-700">Sosial Media</TableHead>
                 <TableHead className="text-gray-700">Tanggal</TableHead>
+                <TableHead className="text-gray-700">Action</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -126,6 +144,24 @@ export default function TableInnovation() {
                       ? new Date(item.created_at).toLocaleDateString("id-ID")
                       : "—"}
                   </TableCell>
+
+                  {/* Kolom action */}
+                  {/* Kolom Action */}
+                  <TableCell className="flex gap-2">
+                    <Button
+                      onClick={() => handleEdit(item.id)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(item.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                  
                 </TableRow>
               ))}
             </TableBody>
@@ -240,6 +276,7 @@ export function ImageCell({ images = [], alt = "Gambar" }: ImageCellProps) {
 }
 
 
+import router from "next/router";
 import type { ComponentType, SVGProps } from "react";
 import { FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
 import { Button } from "../ui/button";

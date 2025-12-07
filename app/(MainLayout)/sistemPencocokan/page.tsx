@@ -24,7 +24,6 @@ interface InnovationItem {
   };
 }
 
-
 // =============================
 // Normalizer
 // =============================
@@ -61,7 +60,6 @@ const levenshtein = (a: string, b: string): number => {
 const fuzzyWordMatch = (text: string, word: string): boolean =>
   text.includes(word) ||
   text.split(" ").some((w: string) => levenshtein(w, word) <= 1);
-
 
 // =============================
 // ⭐ SMART SEMANTIC SEARCH
@@ -203,7 +201,7 @@ export default function SistemPencocokanPage() {
                   className="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
                 >
                   <History className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm sm:text-base">{item.nama_inovasi}</span>
+                    <span className="text-sm sm:text-base">{item.nama_inovasi}</span>
                 </Link>
               ))
             )}
@@ -235,9 +233,10 @@ export default function SistemPencocokanPage() {
                   {item.nama_inovasi}
                 </h3>
 
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {item.overview}
-                </p>
+                <div
+                  className="text-gray-600 text-sm leading-relaxed max-h-40 overflow-hidden relative"
+                  dangerouslySetInnerHTML={{ __html: item.overview }}
+                />
 
                 <div className="flex flex-wrap gap-2 mt-4">
                   {item.categories.map((c) => (
@@ -251,13 +250,17 @@ export default function SistemPencocokanPage() {
                   ))}
                 </div>
 
-                {item.images && (
-                  <Image
-                    src={item.images[0]}
-                    alt={item.nama_inovasi}
-                    className="mt-4 rounded-xl w-full h-40 object-cover"
-                  />
+                {item.images && item.images[0] && item.images[0].trim() !== "" && (
+                  <div className="mt-4 relative w-full h-40 rounded-xl overflow-hidden">
+                    <Image
+                      src={item.images[0]}
+                      alt={item.nama_inovasi}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 )}
+
               </Link>
             ))}
           </div>
