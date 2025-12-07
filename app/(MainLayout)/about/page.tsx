@@ -67,7 +67,7 @@ export default function AboutPage() {
           </div>
           <div className="relative w-full h-[250px] rounded-xl overflow-hidden shadow-lg">
             <Image
-              src={imageSrc}
+              src="/images/ABT2.jpeg"
               alt="Orbit Jatim"
               fill
               className="object-cover"
