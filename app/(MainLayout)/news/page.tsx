@@ -60,7 +60,7 @@ export default function News() {
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
           <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-md">Berita</h1>
           <p className="text-lg sm:text-xl max-w-2xl drop-shadow-sm">
-            Temukan berita - berita yang cocok.
+            Berita seputar produk inovasi dan pengelolaan inovasi di Jawa Timur
           </p>
         </div>
       </section>
