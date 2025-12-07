@@ -49,7 +49,7 @@ export default function AboutPage() {
           {/* Image Right */}
           <div className={`relative w-full h-[350px] sm:h-[420px] rounded-xl overflow-hidden shadow-lg transition-opacity duration-700 ${fade ? "opacity-100" : "opacity-0"}`}>
             <Image
-              src={imageSrc}
+              src="/images/ABT2.jpeg"
               alt="Orbit Jatim"
               fill
               className="object-cover"
