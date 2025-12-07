@@ -110,7 +110,7 @@ export default function InnovatorsPage() {
             {/* ===================== */}
             {/* SIDEBAR (Filter UI) */}
             {/* ===================== */}
-            <aside className="md:col-span-1">
+            <aside className="md:col-span-1 w-full">
                 <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200 w-full sticky top-4">
                     <h3 className="text-lg font-bold text-teal-700 mb-4">Pencarian & Filter</h3>
                     

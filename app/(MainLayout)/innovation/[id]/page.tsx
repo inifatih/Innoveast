@@ -19,12 +19,12 @@ import { getPublicInnovations } from "../action";
 
 type DetailBlockProps = {
   title: string;
-  content: string;
+  html: string;
 };
 
 type DetailListProps = {
   title: string;
-  items: string;
+  html: string;
 };
 
 interface SidebarInfoProps {
@@ -141,9 +141,8 @@ export default function InnovationDetailPage() {
             {/* LEFT CONTENT */}
             <div className="lg:col-span-2 space-y-8">
               {/* GALLERY */}
-              <h2 className="text-xl font-semibold text-slate-900">Innovation Gallery</h2>
               <Carousel
-                className="relative w-full rounded-xl overflow-hidden"
+                className="relative w-full h- rounded-xl overflow-hidden"
                 plugins={[
                   Autoplay({
                     delay: 3500,
@@ -172,32 +171,32 @@ export default function InnovationDetailPage() {
                 </CarouselContent>
 
                 {/* BUTTON CHEVRON */}
-                <CarouselPrevious className="left-2 bg-white/70 backdrop-blur border-none shadow-md hover:bg-white" />
-                <CarouselNext className="right-2 bg-white/70 backdrop-blur border-none shadow-md hover:bg-white" />
+                <CarouselPrevious className="left-2 bg-white/70 backdrop-blur border-none shadow-md hover:bg-orange-400" />
+                <CarouselNext className="right-2 bg-white/70 backdrop-blur border-none shadow-md hover:bg-orange-400" />
               </Carousel>
 
 
               {/* DETAILS SECTION */}
               <section className="bg-white rounded-xl p-6 shadow-sm space-y-6">
-                <DetailBlock title="Technology Overview" content={htmlToText(item.overview) || ""} />
+                <DetailBlock title="Technology Overview" html={item.overview} />
                 <DetailList
                   title="Technology Features & Specifications"
-                  items={htmlToText(item.features) || ""}
+                  html={item.features}
                 />
                 <DetailBlock
                   title="Potential Application"
-                  content={htmlToText(item.potential_application) || ""}
+                  html={item.potential_application}
                 />
                 <DetailBlock
                   title="Unique Value Proposition"
-                  content={htmlToText(item.unique_value) || ""}
+                  html={item.unique_value}
                 />
 
                 {/* BUTTON MENUJU PAGE UPDATE REQUEST */}
                 <div className="pt-4 border-t border-slate-200">
                   <button
                     onClick={() => router.push("/requestupdatedata")}
-                    className="px-5 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors"
+                    className="px-5 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-200 hover:text-orange-600 transition-colors"
                   >
                     Minta Ubah Data
                   </button>
@@ -212,19 +211,19 @@ export default function InnovationDetailPage() {
                         href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-blue-600 transition-colors"
+                        className="hover:text-orange-600 transition-colors"
                       ><FaFacebookF /></Link>
                       <Link
                         href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-blue-400 transition-colors"
+                        className="hover:text-orange-400 transition-colors"
                       ><FaTwitter /></Link>
                       <Link
                         href={`https://www.linkedin.com/sharing/share-offsite/?url=$(currentUrl)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-blue-700 transition-colors"
+                        className="hover:text-orange-600 transition-colors"
                       ><FaLinkedinIn /></Link>
                       <Link
                         href={`https://www.instagram.com/`}
@@ -259,21 +258,29 @@ export default function InnovationDetailPage() {
 /* ============================================================
    =================== COMPONENTS ============================
    ============================================================ */
-
-function DetailBlock({ title, content }: DetailBlockProps) {
+export function DetailBlock({ title, html }: DetailBlockProps) {
   return (
     <div>
-      <h2 className="text-xl font-semibold text-teal-700 border-l-4 border-teal-200 pl-4 mb-2">{title}</h2>
-      <p className="text-slate-700">{content}</p>
+      {/* Title tetap normal */}
+      <h2 className="text-xl font-bold text-orange-600 border-l-4 border-orange-200 pl-4 mb-2">{title}</h2>
+
+      {/* HTML hanya untuk konten */}
+      <div
+        className="prose prose-sm max-w-none"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
     </div>
-  );
+  )
 }
 
-function DetailList({ title, items }: DetailListProps) {
+
+function DetailList({ title, html }: DetailListProps) {
   return (
     <div>
-      <h2 className="text-xl font-semibold text-teal-700 border-l-4 border-teal-200 pl-4 mb-2">{title}</h2>
-      <p>{items}</p>
+      <h2 className="text-xl font-bold text-orange-600 border-l-4 border-orange-200 pl-4 mb-2">{title}</h2>
+      <div
+        className="prose prose-sm max-w-none"
+        dangerouslySetInnerHTML={{ __html: html }}/>
     </div>
   );
 }
@@ -282,7 +289,7 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
   return (
     <aside className="space-y-6 md:sticky md:top-24">
       <div className="bg-white rounded-xl p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-teal-800 mb-4">Key Information</h3>
+        <h3 className="text-xl font-bold text-orange-600 mb-4">Key Information</h3>
         {/* <SidebarInfo label="Category" value={item.category} badge /> */}
         <SidebarInfo label="ID Number" value={`INNOV-${item.id}`} />
         <SidebarInfo
@@ -310,17 +317,17 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
             <div className="flex gap-3 text-xl mt-1">
               {item.social?.instagram && (
                 <Link href={item.social.instagram} target="_blank">
-                  <FaInstagram className="hover:text-pink-600 transition-colors" />
+                  <FaInstagram className="hover:text-orange-600 transition-colors" />
                 </Link>
               )}
               {item.social?.youtube && (
                 <Link href={item.social.youtube} target="_blank">
-                  <FaYoutube className="hover:text-red-600 transition-colors" />
+                  <FaYoutube className="hover:text-orange-600 transition-colors" />
                 </Link>
               )}
               {item.social?.tiktok && (
                 <Link href={item.social.tiktok} target="_blank">
-                  <FaTiktok className="hover:text-black transition-colors" />
+                  <FaTiktok className="hover:text-orange-600 transition-colors" />
                 </Link>
               )}
             </div>
@@ -328,9 +335,9 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
         />
         <button
           onClick={() => router.push("/contact")}
-          className="mt-4 w-full px-4 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors"
+          className="mt-4 w-full px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-200 hover:text-orange-600 transition-colors"
         >
-          Buat Pertanyaan
+          Hubungi Inovator
         </button>
       </div>
     </aside>
@@ -382,12 +389,4 @@ function RelatedItems({ related, router }: { related: InnovationItem[]; router: 
       </div>
     </section>
   );
-}
-
-// Helper
-function htmlToText(html: string) {
-  if (!html) return "";
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-  return tmp.textContent || "";
 }

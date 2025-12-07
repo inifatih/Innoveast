@@ -25,7 +25,7 @@ import {
 import { actionSignIn } from "@/app/auth/login/action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 // =========================
 //  ZOD REGISTRATION SCHEMA
@@ -49,6 +49,7 @@ export function LoginDialog({
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [loginMessage, setLoginMessage] = useState(""); // State untuk pesan sukses
+  const [showPassword, setShowPassword] = useState(false);
 
   // Form
   const form = useForm<LoginSchema>({
@@ -123,15 +124,28 @@ export function LoginDialog({
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" placeholder="••••••••" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input {...field} type={showPassword ? "text" : "password"} placeholder="••••••••" />
+                          <Button type="button" className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-500" onClick={() => setShowPassword(!showPassword)}>
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4"/>
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }
+                  
+                }
               />
 
               {/* Server Error */}

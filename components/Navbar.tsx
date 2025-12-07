@@ -105,7 +105,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className={`text-xl font-semibold transition ${isScrolled ? "text-black" : "text-white"}`}
+          className={`text-2xl font-bold transition ${isScrolled ? "text-black" : "text-white"}`}
         >
           Orbit Jatim
         </Link>
@@ -147,9 +147,17 @@ export default function Navbar() {
                     </AccordionContent>
                   </AccordionItem>
 
+                  {/* Innovators */}
+                  <AccordionItem value="innovators">
+                    <AccordionTrigger>Innovators</AccordionTrigger>
+                    <AccordionContent>
+                      <MobileItem href="/innovator" title="Innovators" onClick={() => setMobileOpen(false)} />
+                    </AccordionContent>
+                  </AccordionItem>
+
                   {/* About */}
                   <AccordionItem value="about">
-                    <AccordionTrigger>About Us</AccordionTrigger>
+                    <AccordionTrigger>About Orbit Jatim</AccordionTrigger>
                     <AccordionContent>
                       <MobileItem href="/about" title="Company Profile" onClick={() => setMobileOpen(false)} />
                     </AccordionContent>
@@ -240,6 +248,15 @@ export default function Navbar() {
                       <ListItem href="/events" title="Calendar of Events">Acara, workshop, dan seminar inovasi.</ListItem>
                     </ul>
                   </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                {/* Innovators */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/innovator" className={`${navigationMenuTriggerStyle()} hover:bg-transparent transition-none text-base md:text-lg`}>
+                      Innovators
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* About */}
