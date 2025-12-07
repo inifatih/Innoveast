@@ -1,6 +1,13 @@
 "use client";
 
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -10,9 +17,11 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 
-import { getAllInnovations } from "@/app/admin/innovation/action";
+import { deleteInnovationById, getAllInnovations } from "@/app/admin/innovation/action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 interface InnovationItem {
   id: number;
@@ -43,6 +52,7 @@ interface InnovationItem {
 export default function TableInnovation() {
   const [data, setData] = useState<InnovationItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Fetch data
   const fetchData = async () => {
@@ -64,9 +74,12 @@ export default function TableInnovation() {
 
   const handleEdit = (id: number) => {
     console.log("Edit ID:", id);
-    // misal redirect ke halaman edit
-    router.push(`/admin/innovation/edit/${id}`);
+    router.push(`/admin/innovation/${id}`);
   };
+
+  // Dialog untuk konfirmasi
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Apakah Anda yakin ingin menghapus inovasi ini?")) return;
@@ -155,22 +168,66 @@ export default function TableInnovation() {
                       Edit
                     </Button>
                     <Button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => {
+                        setDeleteId(item.id);
+                        setIsDialogOpen(true);
+                      }}
                       className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
                     >
                       Delete
                     </Button>
-                  </TableCell>
-                  
+                  </TableCell>             
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
       </CardContent>
+      {/* Dialog konfirmasi delete */}
+      {isDialogOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="max-w-md bg-white rounded-2xl shadow-2xl p-6">
+            {/* konten dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent className="max-w-md bg-white shadow-2xl border-0 rounded-2xl">
+                <DialogHeader>
+                  <DialogTitle>Konfirmasi Hapus</DialogTitle>
+                </DialogHeader>
+
+                <p className="text-gray-700 my-4">
+                  Apakah Anda yakin ingin menghapus inovasi ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+
+                <DialogFooter className="flex justify-end gap-2 w-full">
+                  <Button
+                    className="rounded-xl h-10 border-none text-white bg-blue-600 hover:bg-amber-200 hover:cursor-pointer px-4"
+                    variant="outline"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    className="rounded-xl h-10 bg-red-600 hover:bg-amber-200 hover:cursor-pointer px-4"
+                    variant="destructive"
+                    onClick={async () => {
+                      if (!deleteId) return;
+                      await handleDelete(deleteId);
+                      setIsDialogOpen(false);
+                    }}
+                  >
+                    Hapus
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
+
+
 
 // Image Cell
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -331,4 +388,8 @@ function htmlToText(html: string) {
   tmp.innerHTML = html;
   return tmp.textContent || "";
 }
+
+
+
+
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createInnovation(formData: FormData) {
@@ -132,7 +133,6 @@ type InnovationCategoryJoin = {
   Categories: CategoryItem | CategoryItem[] | null;
 };
 
-
 export async function getAllInnovations() {
   const supabase = await createClient();
 
@@ -208,4 +208,200 @@ export async function getAllInnovations() {
   });
 
   return mapped;
+}
+
+// Delete Data
+// Delete inovasi by ID
+export const deleteInnovationById = async (id: number) => {
+  const { data, error } = await supabaseAdmin
+    .from("Innovations")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+  return data;
+};
+
+
+// BY ID
+export async function getInnovationByIdForUpdate(id: number) {
+  const { data, error } = await supabaseAdmin
+    .from("Innovations")
+    .select(`
+      id,
+      created_at,
+      nama_inovasi,
+      overview,
+      features,
+      potential_application,
+      unique_value,
+      asal_inovasi,
+      tiktok_url,
+      instagram_url,
+      youtube_url,
+      Profiles(id, nama),
+
+      Innovation_categories (
+        Categories(nama_kategori)
+      ),
+
+      Innovation_images(image_path)
+    `)
+    .eq("id", id)
+    .single();
+
+  if (error || !data) throw error ?? new Error("Innovation not found");
+
+  // Ambil images
+  // Ambil images
+  const images =
+    data.Innovation_images?.map((img) =>
+      supabaseAdmin.storage.from("assets").getPublicUrl(img.image_path).data.publicUrl
+    ) || [];
+
+  // Ambil categories
+  const categories =
+    (data.Innovation_categories as InnovationCategoryJoin[] | null)
+      ?.flatMap((catJoin) => {
+        const cats = catJoin.Categories;
+        if (!cats) return [];
+        return Array.isArray(cats) ? cats : [cats];
+      })
+      .map((cat) => cat.nama_kategori)
+      .filter(Boolean) || [];
+
+  // Ambil innovator
+  const innovator = Array.isArray(data.Profiles) ? data.Profiles[0] : data.Profiles;
+
+  return {
+    id: data.id,
+    nama_inovasi: data.nama_inovasi,
+    overview: data.overview,
+    features: data.features,
+    potential_application: data.potential_application,
+    unique_value: data.unique_value,
+    asal_inovasi: data.asal_inovasi,
+    created_at: data.created_at,
+
+    innovator: {
+      id: innovator?.id || null,
+      nama: innovator?.nama || null,
+    },
+
+    social: {
+      tiktok: data.tiktok_url,
+      instagram: data.instagram_url,
+      youtube: data.youtube_url,
+    },
+
+    images,
+    categories,
+  };
+}
+
+
+
+// Update/Edit Data
+// Update inovasi by ID
+export async function updateInnovation(id: number, formData: FormData) {
+  // Ambil data umum
+  const nama_inovasi = formData.get("nama_inovasi") as string;
+  const asal_inovasi = formData.get("asal_inovasi") as string;
+  const overview = formData.get("overview") as string;
+  const features = formData.get("features") as string;
+  const potential_application = formData.get("potential_application") as string;
+  const unique_value = formData.get("unique_value") as string;
+  const id_inovator = formData.get("id_inovator") as string;
+
+  // Sosial media
+  const tiktok_url = formData.get("tiktok_url") as string | null;
+  const instagram_url = formData.get("instagram_url") as string | null;
+  const youtube_url = formData.get("youtube_url") as string | null;
+
+  // Categories sebagai string[]
+  const categoryNames = formData.getAll("categories") as string[];
+
+  // Multiple images
+  const imageFiles = formData.getAll("images") as File[];
+
+  // 1. Update Innovations
+  const { data: innovation, error: updateError } = await supabaseAdmin
+    .from("Innovations")
+    .update({
+      nama_inovasi,
+      asal_inovasi,
+      overview,
+      features,
+      potential_application,
+      unique_value,
+      id_inovator,
+      tiktok_url,
+      instagram_url,
+      youtube_url,
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (updateError) throw updateError;
+
+  const innovationId = innovation.id;
+
+  // 2. Update kategori
+  // Hapus kategori lama
+  const { error: deleteCatError } = await supabaseAdmin
+    .from("Innovation_categories")
+    .delete()
+    .eq("id_innovations", innovationId);
+
+  if (deleteCatError) throw deleteCatError;
+
+  // Insert kategori baru
+  if (categoryNames.length > 0) {
+    const { data: categoryData, error: catError } = await supabaseAdmin
+      .from("Categories")
+      .select("id")
+      .in("nama_kategori", categoryNames);
+
+    if (catError) throw catError;
+
+    const categoryIds = categoryData?.map((c) => c.id) ?? [];
+
+    const categoryRows = categoryIds.map((id_categories) => ({
+      id_innovations: innovationId,
+      id_categories,
+    }));
+
+    const { error: categoryInsertError } = await supabaseAdmin
+      .from("Innovation_categories")
+      .insert(categoryRows);
+
+    if (categoryInsertError) throw categoryInsertError;
+  }
+
+  // 3. Upload images baru (opsional, bisa hapus lama jika ingin)
+  for (const file of imageFiles) {
+    if (!file || file.size === 0) continue;
+
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `Innovations/${innovationId}/${fileName}`;
+
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("assets")
+      .upload(filePath, file, { contentType: file.type });
+
+    if (uploadError) throw uploadError;
+
+    const { error: imgInsertError } = await supabaseAdmin
+      .from("Innovation_images")
+      .insert({
+        id_innovations: innovationId,
+        image_path: filePath,
+      });
+
+    if (imgInsertError) throw imgInsertError;
+  }
+
+  return innovation;
 }
