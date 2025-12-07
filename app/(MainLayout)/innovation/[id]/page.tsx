@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaFacebookF, FaGlobe, FaInstagram, FaLinkedinIn, FaTiktok, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaFacebook, FaFacebookF, FaGlobe, FaInstagram, FaLinkedinIn, FaTiktok, FaTwitter, FaYoutube } from "react-icons/fa";
 import { getPublicInnovations } from "../action";
 
 
@@ -268,12 +268,12 @@ export function DetailBlock({ title, html }: DetailBlockProps) {
 
       {/* HTML hanya untuk konten */}
       <div
-        className="
-          prose prose-sm max-w-none
-          prose-li:ml-4
-          prose-ul:list-disc
-          prose-ol:list-decimal"
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: html ?? "—" }}
+        style={{
+          paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+          listStyleType: "initial", // ul = disc, ol = decimal
+          whiteSpace: "pre-wrap", // untuk line break
+        }}
       />
     </div>
   )
@@ -285,12 +285,13 @@ function DetailList({ title, html }: DetailListProps) {
     <div>
       <h2 className="text-xl font-bold text-orange-600 border-l-4 border-orange-200 pl-4 mb-2">{title}</h2>
       <div
-        className="
-          prose prose-sm max-w-none
-          prose-li:ml-4
-          prose-ul:list-disc
-          prose-ol:list-decimal"
-        dangerouslySetInnerHTML={{ __html: html }}/>
+        dangerouslySetInnerHTML={{ __html: html ?? "—" }}
+        style={{
+          paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+          listStyleType: "initial", // ul = disc, ol = decimal
+          whiteSpace: "pre-wrap", // untuk line break
+        }}
+      />
     </div>
   );
 }
@@ -342,7 +343,7 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
               )}
               {item.social?.facebook && (
                 <Link href={item.social.facebook} target="_blank">
-                  <FaFacebookF className="hover:text-orange-600 transition-colors" />
+                  <FaFacebook className="hover:text-orange-600 transition-colors" />
                 </Link>
               )}
               {item.social?.web && (

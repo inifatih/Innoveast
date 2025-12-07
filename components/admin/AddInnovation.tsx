@@ -13,8 +13,8 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { TiptapEditor } from "./TipTapEditor";
-
 
 // --------------------
 // Schema Zod
@@ -26,7 +26,7 @@ const InnovationSchema = z.object({
   features: z.string().min(1),
   potential_application: z.string().min(1),
   unique_value: z.string().min(1),
-  inovator: z.array(z.string()).min(1),
+  inovator: z.string().min(1),
   categories: z.array(z.string()).min(1),
   images: z.array(z.any()).optional(),
   tiktok_url: z.string().optional(),
@@ -53,14 +53,12 @@ export default function AddInnovationForm() {
       features: "",
       potential_application: "",
       unique_value: "",
-      inovator: [],
+      inovator: "",
       categories: [],
       images: [],
       tiktok_url: "",
       instagram_url: "",
       youtube_url: "",
-      facebook_url: "",
-      web_url: "",
     },
   });
 
@@ -75,7 +73,6 @@ export default function AddInnovationForm() {
   }, []);
 
   const onSubmit = async (values: InnovationForm) => {
-    console.log("submit clicked")
     setLoading(true);
     setStatus("");
     try {
@@ -87,7 +84,7 @@ export default function AddInnovationForm() {
       formData.append("features", values.features);
       formData.append("potential_application", values.potential_application);
       formData.append("unique_value", values.unique_value);
-      values.inovator.forEach((inv) => formData.append("inovator", inv));
+      formData.append("id_inovator", values.inovator);
 
       formData.append("tiktok_url", values.tiktok_url || "");
       formData.append("instagram_url", values.instagram_url || "");
@@ -163,42 +160,35 @@ export default function AddInnovationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Inovator</FormLabel>
-                  <FormDescription className="text-gray-600 text-sm">
-                    Pilih inovator yang terlibat dalam inovasi
-                  </FormDescription>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-3 rounded bg-gray-50">
-                    {innovators.map((inv) => {
-                      const isChecked = field.value?.includes(inv.id);
-                      return (
-                        <label
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih inovator" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white">
+                      {innovators.map((inv) => (
+                        <SelectItem
                           key={inv.id}
-                          className={`flex items-center justify-center gap-2 cursor-pointer 
-                                    rounded-md px-3 py-2 transition-colors font-semibold text-sm
-                                    ${isChecked ? "bg-orange-500 text-white" : "bg-gray-200 text-gray-800"}
-                                    hover:bg-orange-100
-                                    active:bg-orange-500 active:text-white`}
+                          value={String(inv.id)}
+                          className="
+                            text-gray-700
+                            focus:bg-orange-400 focus:text-white
+                            data-highlighted:bg-orange-400 data-highlighted:text-white 
+                            data-[state=checked]:bg-orange-600 data-[state=checked]:text-white 
+                          "
                         >
-                          <span>{inv.name}</span>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                field.onChange([...(field.value || []), inv.id]);
-                              } else {
-                                field.onChange(field.value.filter((v) => v !== inv.id));
-                              }
-                            }}
-                          />
-                        </label>
-                      );
-                    })}
-                  </div>
+                          {inv.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
 
 
             {/* Categories */}
@@ -450,4 +440,3 @@ export default function AddInnovationForm() {
     </Card>
   );
 }
-

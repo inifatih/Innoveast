@@ -9,12 +9,15 @@ import { z } from "zod";
 import { getCategories } from "@/app/admin/categories/action";
 import { getInnovationByIdForUpdate, getInovators, updateInnovation } from "@/app/admin/innovation/action";
 
-import ReactSelect from "react-select";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { TiptapEditor } from "./TipTapEditor";
+
 
 const InnovationSchema = z.object({
   nama_inovasi: z.string().min(1),
@@ -23,7 +26,7 @@ const InnovationSchema = z.object({
   features: z.string().min(1),
   potential_application: z.string().min(1),
   unique_value: z.string().min(1),
-  inovator: z.array(z.string()).min(1),
+  inovator: z.string().min(1),
   categories: z.array(z.string()).min(1),
   images: z.array(z.any()).optional(),
   tiktok_url: z.string().optional(),
@@ -42,6 +45,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
   const [status, setStatus] = useState<"success" | "error" | "">("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [imagesPreview, setImagesPreview] = useState<string[]>([]);
+  const router = useRouter();
 
   const form = useForm<InnovationForm>({
     resolver: zodResolver(InnovationSchema),
@@ -52,7 +56,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
       features: "",
       potential_application: "",
       unique_value: "",
-      inovator: [],
+      inovator: "",
       categories: [],
       images: [] as File[],
       tiktok_url: "",
@@ -91,7 +95,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
         features: innovationDetail.features ?? "",
         potential_application: innovationDetail.potential_application ?? "",
         unique_value: innovationDetail.unique_value ?? "",
-        inovator: innovationDetail.innovators?.map(inv => String(inv.id)) ?? [],
+        inovator: innovationDetail.innovator?.id ?? "",
         categories: safeCategories, // array string, akan otomatis checked di form
         images: [], // file input tetap kosong
         tiktok_url: innovationDetail.social?.tiktok ?? "",
@@ -131,7 +135,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
       formData.append("features", values.features);
       formData.append("potential_application", values.potential_application);
       formData.append("unique_value", values.unique_value);
-      values.inovator.forEach((inv) => formData.append("id_inovator", inv));
+      formData.append("id_inovator", values.inovator);
 
       formData.append("tiktok_url", values.tiktok_url || "");
       formData.append("instagram_url", values.instagram_url || "");
@@ -150,7 +154,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
       await updateInnovation(id, formData);
 
       setStatus("success");
-      window.location.reload();
+      router.push("/admin/innovation/");
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -208,29 +212,33 @@ export default function EditInnovationForm({ id }: { id: number}) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Inovator</FormLabel>
-
-                  <ReactSelect
-                    isMulti
-                    options={innovators.map((p) => ({
-                      value: p.id,
-                      label: p.name,
-                    }))}
-                    value={innovators
-                      .filter((p) => field.value?.includes(p.id))
-                      .map((p) => ({
-                        value: p.id,
-                        label: p.name,
-                      }))}
-                    onChange={(selected) =>
-                      field.onChange(selected?.map((s) => s.value) ?? [])
-                    }
-                  />
-
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih inovator" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white">
+                      {innovators.map((inv) => (
+                        <SelectItem
+                          key={inv.id}
+                          value={String(inv.id)}
+                          className={`
+                            text-gray-700
+                            focus:bg-orange-400 focus:text-white
+                            data-highlighted:bg-orange-400 data-highlighted:text-white
+                            ${field.value === String(inv.id) ? "bg-orange-500 text-white" : ""}
+                          `}
+                        >
+                          {inv.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
 
             {/* Categories */}
             <FormField
@@ -384,7 +392,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
                 name="facebook_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>YouTube URL</FormLabel>
+                    <FormLabel>Facebook URL</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -396,7 +404,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
                 name="web_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>YouTube URL</FormLabel>
+                    <FormLabel>Website URL</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -412,7 +420,7 @@ export default function EditInnovationForm({ id }: { id: number}) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Media Inovasi (Gambar / Video)</FormLabel>
-                  
+
                   {/* Input file baru */}
                   <FormControl>
                     <Input
@@ -421,65 +429,55 @@ export default function EditInnovationForm({ id }: { id: number}) {
                       accept="image/*,video/*"
                       onChange={(e) => {
                         const files = Array.from(e.target.files || []);
-                        setSelectedFiles((prev) => {
-                          const updated = [...prev, ...files];
-                          field.onChange(updated); // update react-hook-form dengan file baru
-                          return updated;
-                        });
+                        // update state file baru
+                        setSelectedFiles((prev) => [...prev, ...files]);
+                        // update react-hook-form hanya dengan file baru
+                        field.onChange([...(field.value ?? []), ...files]);
                       }}
                     />
                   </FormControl>
 
                   {/* Preview gambar lama */}
-                  {imagesPreview.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {imagesPreview.map((url, idx) => (
-                        <div key={idx} className="relative w-24 h-24">
-                          <img
-                            src={url}
-                            alt={`Image ${idx}`}
-                            className="w-full h-full object-cover rounded border"
-                          />
-                          <button
-                            type="button"
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-white hover:text-red-800 cursor-pointer"
-                            onClick={() => {
-                              // hapus image lama dari preview
-                              setImagesPreview(imagesPreview.filter((img) => img !== url));
-                            }}
-                          >
-                            x
-                          </button>
-                        </div>
-                      ))}
+                  {imagesPreview.map((url, idx) => (
+                    <div key={url} className="relative w-24 h-24">
+                      <Image src={url} alt={`Image ${idx}`} fill className="w-full h-full object-cover rounded border" />
+                      <button
+                        type="button"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                        onClick={() => {
+                          setImagesPreview(prev => {
+                            const updated = prev.filter((_, i) => i !== idx);
+                            return updated;
+                          });
+                        }}
+                      >
+                        x
+                      </button>
                     </div>
-                  )}
+                  ))}
 
                   {/* Preview file baru */}
-                  {selectedFiles.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedFiles.map((file, idx) => (
-                        <div key={idx} className="relative w-24 h-24">
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={file.name}
-                            className="w-full h-full object-cover rounded border"
-                          />
-                          <button
-                            type="button"
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                            onClick={() => {
-                              const newFiles = selectedFiles.filter((_, i) => i !== idx);
-                              setSelectedFiles(newFiles);
-                              field.onChange(newFiles); // update react-hook-form
-                            }}
-                          >
-                            x
-                          </button>
-                        </div>
-                      ))}
+                  {selectedFiles.map((file, idx) => (
+                    <div key={file.name + idx} className="relative w-24 h-24">
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        alt={file.name}
+                        fill
+                        className="w-full h-full object-cover rounded border"
+                        onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                        onClick={() => {
+                          setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
+                          field.onChange(field.value?.filter((_, i) => i !== idx)); // update react-hook-form
+                        }}
+                      >
+                        x
+                      </button>
                     </div>
-                  )}
+                  ))}
 
                   <FormMessage />
                 </FormItem>
@@ -488,9 +486,11 @@ export default function EditInnovationForm({ id }: { id: number}) {
 
 
 
+
+
             {/* Submit */}
             <div className="flex gap-4 items-center">
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className="rounded-xl h-10 bg-amber-600 hover:bg-amber-200 hover:cursor-pointer">
                 {loading ? <Loader2 className="animate-spin h-4 w-4" /> : "Simpan"}
               </Button>
               {status === "success" && <span className="text-green-600">Berhasil disimpan!</span>}

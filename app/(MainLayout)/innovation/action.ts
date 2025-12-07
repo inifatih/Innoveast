@@ -28,6 +28,8 @@ export async function getPublicInnovations() {
       tiktok_url,
       instagram_url,
       youtube_url,
+      facebook_url,
+      web_url,
       Profiles(id, nama),
 
       Innovation_categories (
@@ -78,6 +80,8 @@ export async function getPublicInnovations() {
         tiktok: item.tiktok_url,
         instagram: item.instagram_url,
         youtube: item.youtube_url,
+        facebook: item.facebook_url,
+        web: item.web_url,
       },
 
       images,

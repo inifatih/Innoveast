@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createInnovation(formData: FormData) {
+
   // Ambil data umum
   const nama_inovasi = formData.get("nama_inovasi") as string;
   const asal_inovasi = formData.get("asal_inovasi") as string;
@@ -11,7 +12,7 @@ export async function createInnovation(formData: FormData) {
   const features = formData.get("features") as string;
   const potential_application = formData.get("potential_application") as string;
   const unique_value = formData.get("unique_value") as string;
-  const id_inovators = formData.getAll("inovator") as string[];
+  const id_inovator = formData.get("id_inovator") as string;
 
   // Sosial media
   const tiktok_url = formData.get("tiktok_url") as string | null;
@@ -26,7 +27,7 @@ export async function createInnovation(formData: FormData) {
   // Multiple images
   const imageFiles = formData.getAll("images") as File[];
 
-  // 1. Insert Innovations (tanpa id_inovators)
+  // 1. Insert Innovations
   const { data: innovation, error: insertError } = await supabaseAdmin
     .from("Innovations")
     .insert({
@@ -36,6 +37,7 @@ export async function createInnovation(formData: FormData) {
       features,
       potential_application,
       unique_value,
+      id_inovator,
       tiktok_url,
       instagram_url,
       youtube_url,
@@ -49,36 +51,7 @@ export async function createInnovation(formData: FormData) {
 
   const innovationId = innovation.id;
 
-  // 2. Insert ke pivot table InnovationInovators
-  let inovatorIds: number[] = [];
-  if (id_inovators.length > 0) {
-    // Ambil ID dari tabel Profiles berdasarkan nama
-    const { data: inovatorData, error: invError } = await supabaseAdmin
-      .from("Profiles")
-      .select("id")
-      .in("nama", id_inovators);
-
-    if (invError) throw invError;
-
-    inovatorIds = inovatorData?.map((i) => i.id) ?? [];
-
-    // Masukkan ke pivot table InnovationInovators
-    if (inovatorIds.length > 0) {
-      const pivotRows = inovatorIds.map((id_profile) => ({
-        id_innovations: innovationId,
-        id_profiles: id_profile,
-      }));
-
-      const { error: pivotError } = await supabaseAdmin
-        .from("InnovationInovators")
-        .insert(pivotRows);
-
-      if (pivotError) throw pivotError;
-    }
-  }
-
-
-  // 3. Ambil ID kategori dari nama
+  // 2. Ambil ID kategori dari nama
   let categoryIds: number[] = [];
   if (categoryNames.length > 0) {
     const { data: categoryData, error: catError } = await supabaseAdmin
@@ -90,7 +63,7 @@ export async function createInnovation(formData: FormData) {
     categoryIds = categoryData?.map((c) => c.id) ?? [];
   }
 
-  // 4. Insert ke tabel relasi Innovation_categories
+  // 3. Insert ke tabel relasi Innovation_categories
   if (categoryIds.length > 0) {
     const categoryRows = categoryIds.map((id_categories) => ({
       id_innovations: innovationId,
@@ -104,7 +77,7 @@ export async function createInnovation(formData: FormData) {
     if (categoryError) throw categoryError;
   }
 
-  // 5. Upload images
+  // 4. Upload images
   for (const file of imageFiles) {
     if (!file || file.size === 0) continue;
 
@@ -130,9 +103,6 @@ export async function createInnovation(formData: FormData) {
 
   return innovation;
 }
-
-
-  
 
 
 // GET INNOVATORS FROM TABLE PROFILES WHERE IS_ADMIN == FALSE
@@ -166,18 +136,6 @@ type InnovationCategoryJoin = {
   Categories: CategoryItem | CategoryItem[] | null;
 };
 
-type ProfileLite = {
-  id: number | null;
-  nama: string | null;
-};
-
-type Innovator = ProfileLite;
-
-type InnovationInnovatorsJoin = {
-  Profiles: ProfileLite[] | null;
-};
-
-
 export async function getAllInnovations() {
   const supabase = await createClient();
 
@@ -197,10 +155,7 @@ export async function getAllInnovations() {
       youtube_url,
       facebook_url,
       web_url,
-
-      Innovation_innovators (
-        Profiles ( id, nama )
-      ),
+      Profiles(id, nama),
 
       Innovation_categories (
         Categories(nama_kategori)
@@ -209,6 +164,7 @@ export async function getAllInnovations() {
       Innovation_images(image_path)
     `)
   .order("created_at", { ascending: false });
+
 
   if (error) throw error;
 
@@ -228,14 +184,7 @@ export async function getAllInnovations() {
         .map((cat) => cat.nama_kategori)
         .filter((name) => Boolean(name)) || [];
         
-    const innovators: Innovator[] =
-      (item.Innovation_innovators ?? [])
-        .flatMap((join: InnovationInnovatorsJoin) =>
-          join?.Profiles?.map((p) => ({
-            id: p.id,
-            nama: p.nama,
-          })) ?? []
-        );
+    const innovator = Array.isArray(item.Profiles) ? item.Profiles[0] : item.Profiles;
 
     return {
       id: item.id,
@@ -246,7 +195,12 @@ export async function getAllInnovations() {
       unique_value: item.unique_value,
       asal_inovasi: item.asal_inovasi,
       created_at: item.created_at,
-      innovators,
+
+      innovator: {
+        id: innovator?.id || null,
+        nama: innovator?.nama || null,
+      },
+
       social: {
         tiktok: item.tiktok_url,
         instagram: item.instagram_url,
@@ -294,9 +248,7 @@ export async function getInnovationByIdForUpdate(id: number) {
       youtube_url,
       facebook_url,
       web_url,
-      Innovation_innovators (
-        Profiles ( id, nama )
-      ),
+      Profiles(id, nama),
 
       Innovation_categories (
         Categories(nama_kategori)
@@ -328,18 +280,7 @@ export async function getInnovationByIdForUpdate(id: number) {
       .filter(Boolean) || [];
 
   // Ambil innovator
-  const innovators =
-    (data.Innovation_innovators as InnovationInnovatorsJoin[] | null)
-      ?.flatMap((join) => {
-        const profs = join?.Profiles;
-        if (!profs) return [];
-        return Array.isArray(profs) ? profs : [profs];
-      })
-      .map((p) => ({
-        id: p.id,
-        nama: p.nama,
-      })) || [];
-
+  const innovator = Array.isArray(data.Profiles) ? data.Profiles[0] : data.Profiles;
 
   return {
     id: data.id,
@@ -351,7 +292,10 @@ export async function getInnovationByIdForUpdate(id: number) {
     asal_inovasi: data.asal_inovasi,
     created_at: data.created_at,
 
-    innovators,
+    innovator: {
+      id: innovator?.id || null,
+      nama: innovator?.nama || null,
+    },
 
     social: {
       tiktok: data.tiktok_url,
@@ -378,8 +322,7 @@ export async function updateInnovation(id: number, formData: FormData) {
   const features = formData.get("features") as string;
   const potential_application = formData.get("potential_application") as string;
   const unique_value = formData.get("unique_value") as string;
-  // Id_inovator sebagai string[]
-  const id_inovator = formData.getAll("id_inovator") as string[];
+  const id_inovator = formData.get("id_inovator") as string;
 
   // Sosial media
   const tiktok_url = formData.get("tiktok_url") as string | null;
@@ -404,6 +347,7 @@ export async function updateInnovation(id: number, formData: FormData) {
       features,
       potential_application,
       unique_value,
+      id_inovator,
       tiktok_url,
       instagram_url,
       youtube_url,
@@ -450,27 +394,27 @@ export async function updateInnovation(id: number, formData: FormData) {
     if (categoryInsertError) throw categoryInsertError;
   }
 
-  // Update inovator multiple
-  // Hapus dulu semua relasi innovator lama
-  const { error: deleteInvError } = await supabaseAdmin
-    .from("Innovation_innovators")
-    .delete()
-    .eq("innovation_id", innovationId);
+  // Ambil list gambar lama yang masih dipertahankan dari frontend
+  const existingImages = formData.getAll("existing_images[]") as string[];
 
-  if (deleteInvError) throw deleteInvError;
+  // Ambil semua image di DB
+  const { data: dbImages } = await supabaseAdmin
+    .from("Innovation_images")
+    .select("*")
+    .eq("id_innovations", innovationId);
 
-  // Insert ulang dari array id_inovator
-  if (id_inovator.length > 0) {
-    const invRows = id_inovator.map((profile_id) => ({
-      innovation_id: innovationId,
-      profile_id,
-    }));
-
-    const { error: insertInvError } = await supabaseAdmin
-      .from("Innovation_innovators")
-      .insert(invRows);
-
-    if (insertInvError) throw insertInvError;
+  // Hapus image yang tidak ada di existingImages
+  const imagesToDelete = dbImages ?? [];
+  for (const img of imagesToDelete) {
+    if (!existingImages.includes(img.image_path)) {
+      // hapus dari storage
+      await supabaseAdmin.storage.from("assets").remove([img.image_path]);
+      // hapus dari DB
+      await supabaseAdmin
+        .from("Innovation_images")
+        .delete()
+        .eq("id", img.id);
+    }
   }
 
   // 3. Upload images baru (opsional, bisa hapus lama jika ingin)

@@ -22,10 +22,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-type Innovator = {
-  id: number | null;
-  nama: string | null;
-};
 
 interface InnovationItem {
   id: number;
@@ -36,8 +32,11 @@ interface InnovationItem {
   unique_value: string;
   asal_inovasi: string;
   created_at: string;
-  // inovator array dari Profiles Table
-  innovators: Innovator[];
+  // inovator dari Profiles Table
+  innovator: {
+    id: string | null;
+    nama: string | null;
+  };
   // kumpulan image url dari array
   images: string[];
   // kategori lebih dari 1
@@ -148,23 +147,48 @@ export default function TableInnovation() {
                       "—"
                     )}
                   </TableCell>                  
-                  <TableCell className="text-gray-700">{htmlToText(item.overview) ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{htmlToText(item.features) ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{htmlToText(item.potential_application) ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{htmlToText(item.unique_value) ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
-                  <TableCell className="text-gray-800">
-                    {item.innovators && item.innovators.length > 0 ? (
-                      <ul className="list-disc list-inside space-y-0.5">
-                        {item.innovators.map((inv, idx) => (
-                          <li key={idx}>{inv.nama}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      "—"
-                    )}
+                  <TableCell className="text-gray-700">
+                  <div
+    dangerouslySetInnerHTML={{ __html: item.overview ?? "—" }}
+    style={{
+      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+      listStyleType: "initial", // ul = disc, ol = decimal
+      whiteSpace: "pre-wrap", // untuk line break
+    }}
+  />
                   </TableCell>
-
+                  <TableCell className="text-gray-700">
+                                     <div
+    dangerouslySetInnerHTML={{ __html: item.features ?? "—" }}
+    style={{
+      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+      listStyleType: "initial", // ul = disc, ol = decimal
+      whiteSpace: "pre-wrap", // untuk line break
+    }}
+  />
+                  </TableCell>
+                  <TableCell className="text-gray-700">
+                                     <div
+    dangerouslySetInnerHTML={{ __html: item.potential_application ?? "—" }}
+    style={{
+      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+      listStyleType: "initial", // ul = disc, ol = decimal
+      whiteSpace: "pre-wrap", // untuk line break
+    }}
+  />
+                  </TableCell>
+                  <TableCell className="text-gray-700">
+                                    <div
+    dangerouslySetInnerHTML={{ __html: item.unique_value?? "—" }}
+    style={{
+      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+      listStyleType: "initial", // ul = disc, ol = decimal
+      whiteSpace: "pre-wrap", // untuk line break
+    }}
+  />
+                  </TableCell>
+                  <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.innovator?.nama ?? "—"}</TableCell>
                   <TableCell className="text-gray-700"><SocialCell social={item.social}/></TableCell>
                   <TableCell className="text-gray-600">
                     {item.created_at
@@ -347,7 +371,7 @@ export function ImageCell({ images = [], alt = "Gambar" }: ImageCellProps) {
 }
 
 import type { ComponentType, SVGProps } from "react";
-import { FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
+import { FaFacebook, FaGlobe, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
 import { Button } from "../ui/button";
 
 
@@ -356,14 +380,16 @@ interface SocialCellProps {
     tiktok: string | null;
     instagram: string | null;
     youtube: string | null;
+    facebook: string | null;
+    web: string | null;
   };
 }
 
 export function SocialCell({ social }: SocialCellProps) {
-  const { tiktok, instagram, youtube } = social;
+  const { tiktok, instagram, youtube, facebook, web } = social;
 
   // Cek apakah semua sosial media kosong
-  const allEmpty = !tiktok && !instagram && !youtube;
+  const allEmpty = !tiktok && !instagram && !youtube && !facebook && !web ;
   if (allEmpty) return <>—</>;
 
   const renderLink = (
@@ -389,19 +415,8 @@ export function SocialCell({ social }: SocialCellProps) {
       {renderLink(tiktok, FaTiktok)}
       {renderLink(instagram, FaInstagram)}
       {renderLink(youtube, FaYoutube)}
+      {renderLink(facebook, FaFacebook)}
+      {renderLink(web, FaGlobe)}
     </div>
   );
 }
-
-// Helper
-function htmlToText(html: string) {
-  if (!html) return "";
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-  return tmp.textContent || "";
-}
-
-
-
-
-
