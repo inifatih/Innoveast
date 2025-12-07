@@ -8,18 +8,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Kategori
-const categories = [
-  "All",
-  "Technology",
-  "Agriculture",
-  "Energy",
-  "Finance",
-  "Transportation",
-  "Health",
-  "Environment",
-];
-
 interface ListItemProps {
   title: string;
   href: string;
@@ -51,32 +39,38 @@ interface InnovationItem {
   unique_value: string;
   asal_inovasi: string;
   created_at: string;
-  // inovator dari Profiles Table
   innovator: {
     id: string | null;
     nama: string | null;
   };
-  // kumpulan image url dari array
   images: string[];
-  // kategori lebih dari 1
   categories: (string | null)[];
 }
 
 export default function TechOffersPage() {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [openCat, setOpenCat] = useState(false);
-
-  // ⬇️ Tambahkan state untuk menampung data dari database
   const [data, setData] = useState<InnovationItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
 
-  // ⬇️ Fetch data dari database
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   const fetchData = async () => {
     setLoading(true);
     try {
       const innovations = await getPublicInnovations();
       setData(innovations);
+
+      // Extract all unique categories
+      const categoriesSet = new Set<string>();
+      innovations.forEach((item) =>
+        item.categories.forEach((cat) => cat && categoriesSet.add(cat))
+      );
+      setAllCategories(Array.from(categoriesSet));
     } catch (err) {
       console.error("Error fetching innovations:", err);
       setData([]);
@@ -89,16 +83,23 @@ export default function TechOffersPage() {
     fetchData();
   }, []);
 
-
   // Filtering
-  const filteredData = data.filter(
-    (item) =>
-      item.nama_inovasi.toLowerCase().includes(search.toLowerCase()) 
-    // &&
-    //   (category === "All" || item.category === category)
+  const filteredData = data
+    .filter((item) =>
+      item.nama_inovasi.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((item) =>
+      selectedCategories.length === 0
+        ? true
+        : item.categories.some((cat) => selectedCategories.includes(cat!))
+    );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
-  // Truncate jika terlalu panjang > 100 char
   const truncate = (text: string | undefined, max: number) => {
     if (!text) return "";
     return text.length > max ? text.substring(0, max) + "..." : text;
@@ -112,6 +113,18 @@ export default function TechOffersPage() {
     );
   }
 
+  const handleCategoryToggle = (cat: string) => {
+    setCurrentPage(1);
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const resetFilters = () => {
+    setSearch("");
+    setSelectedCategories([]);
+    setCurrentPage(1);
+  };
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -135,11 +148,8 @@ export default function TechOffersPage() {
 
       {/* CONTENT LAYOUT */}
       <section className="max-w-full mx-4 px-4 flex flex-col md:flex-row gap-8 mt-10 mb-20">
-        {/* ======================= SIDEBAR DESKTOP ======================= */}
-        <aside
-          className="hidden md:flex flex-col w-72 shrink-0 bg-white p-6 shadow rounded-lg 
-          sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto"
-        >
+        {/* SIDEBAR DESKTOP */}
+        <aside className="hidden md:flex flex-col w-72 shrink-0 bg-white p-6 shadow rounded-lg sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto">
           <h3 className="font-semibold mb-4">Innovation Marketplace</h3>
 
           <ul className="grid gap-2 mb-6">
@@ -162,26 +172,32 @@ export default function TechOffersPage() {
             className="mb-4"
           />
 
-          {/* CATEGORY DROPDOWN */}
+          {/* CATEGORY CHECKLIST */}
           <div className="border rounded-md">
             <button
               className="w-full flex justify-between p-2 text-sm"
               onClick={() => setOpenCat(!openCat)}
             >
-              <span>{category}</span>
+              <span>
+                {selectedCategories.length === 0
+                  ? "All Categories"
+                  : selectedCategories.join(", ")}
+              </span>
               <span>▾</span>
             </button>
 
             {openCat && (
               <div className="max-h-64 overflow-y-auto border-t p-2">
-                {categories.map((cat) => (
-                  <label key={cat} className="flex items-center gap-2 py-1 cursor-pointer">
+                {allCategories.map((cat) => (
+                  <label
+                    key={cat}
+                    className="flex items-center gap-2 py-1 cursor-pointer"
+                  >
                     <input
-                      type="radio"
-                      name="cat"
+                      type="checkbox"
                       value={cat}
-                      checked={category === cat}
-                      onChange={() => setCategory(cat)}
+                      checked={selectedCategories.includes(cat)}
+                      onChange={() => handleCategoryToggle(cat)}
                     />
                     <span className="text-sm">{cat}</span>
                   </label>
@@ -194,26 +210,26 @@ export default function TechOffersPage() {
           <Button
             variant="secondary"
             className="mt-3 w-full"
-            onClick={() => {
-              setSearch("");
-              setCategory("All");
-            }}
+            onClick={resetFilters}
           >
             Reset
           </Button>
         </aside>
 
-        {/* ======================= RIGHT CONTENT ======================= */}
+        {/* RIGHT CONTENT */}
         <div className="w-full md:w-3/4">
-          {/* ======================= MOBILE MENU DROPDOWN ======================= */}
+          {/* MOBILE MENU DROPDOWN */}
           <div className="md:hidden flex flex-col gap-4 mb-6">
             <select
               className="w-full p-2 rounded-md border text-gray-700"
               onChange={(e) => {
                 const value = e.target.value;
-                if (value === "Innovation Marketplace") window.location.href = "/innovation";
-                if (value === "Innovation Matching") window.location.href = "/matching";
-                if (value === "Innovation Funding") window.location.href = "/funding";
+                if (value === "Innovation Marketplace")
+                  window.location.href = "/innovation";
+                if (value === "Innovation Matching")
+                  window.location.href = "/matching";
+                if (value === "Innovation Funding")
+                  window.location.href = "/funding";
               }}
               defaultValue="Innovation Marketplace"
             >
@@ -227,43 +243,45 @@ export default function TechOffersPage() {
           <div className="mb-6">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Approved Innovation</h2>
             <p className="text-gray-700 leading-relaxed max-w-full text-justify text-md font-medium">
-              Approved Innovation is a curated catalog of innovations that have successfully passed the assessment 
-              and verification process conducted by BRIDA Jawa Timur. 
-              These innovations have been evaluated for quality, feasibility, impact, and readiness for adoption. Each listed innovation has met the standards required to be recognized as a reliable and implementable solution. 
-              This catalog serves as a trusted reference for stakeholders, providing access to proven ideas that can be applied, replicated, or scaled across various sectors. By exploring Approved Innovations, users can confidently discover high-quality solutions that have demonstrated real potential to support regional development and public innovation initiatives.
+              Inovasi yang Disetujui adalah katalog inovasi yang telah dikurasi dan berhasil melewati proses penilaian dan verifikasi yang dilakukan oleh BRIDA Jawa Timur. Inovasi-inovasi ini telah dievaluasi kualitas, kelayakan, dampak, dan kesiapan adopsinya. Setiap inovasi yang terdaftar telah memenuhi standar yang dipersyaratkan untuk diakui sebagai solusi yang andal dan dapat diimplementasikan. Katalog ini berfungsi sebagai referensi tepercaya bagi para pemangku kepentingan, menyediakan akses ke ide-ide yang telah terbukti dan dapat diterapkan, direplikasi, atau ditingkatkan di berbagai sektor. 
             </p>
             <p className="text-gray-700 leading-relaxed max-w-full mt-4 text-md font-semibold">
-              By exploring Approved Innovations, users can confidently discover solutions that deliver measurable results.
+              Dengan menjelajahi Inovasi yang Disetujui, pengguna dapat dengan yakin menemukan solusi berkualitas tinggi yang telah menunjukkan potensi nyata untuk mendukung pembangunan daerah dan inisiatif inovasi publik. Dengan menjelajahi Inovasi yang Disetujui, pengguna dapat dengan yakin menemukan solusi yang memberikan hasil yang terukur.
             </p>
           </div>
 
-          {/* ======================= MOBILE SEARCH + CATEGORY ======================= */}
+          {/* MOBILE SEARCH + CATEGORY */}
           <div className="md:hidden flex flex-col gap-2 mb-6">
             <Input
               placeholder="Search keywords…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-
             <div className="border rounded-md">
               <button
                 className="w-full flex justify-between p-2 text-sm"
                 onClick={() => setOpenCat(!openCat)}
               >
-                <span>{category}</span>
+                <span>
+                  {selectedCategories.length === 0
+                    ? "All Categories"
+                    : selectedCategories.join(", ")}
+                </span>
                 <span>▾</span>
               </button>
 
               {openCat && (
                 <div className="max-h-64 overflow-y-auto border-t p-2">
-                  {categories.map((cat) => (
-                    <label key={cat} className="flex items-center gap-2 py-1 cursor-pointer">
+                  {allCategories.map((cat) => (
+                    <label
+                      key={cat}
+                      className="flex items-center gap-2 py-1 cursor-pointer"
+                    >
                       <input
-                        type="radio"
-                        name="cat"
+                        type="checkbox"
                         value={cat}
-                        checked={category === cat}
-                        onChange={() => setCategory(cat)}
+                        checked={selectedCategories.includes(cat)}
+                        onChange={() => handleCategoryToggle(cat)}
                       />
                       <span className="text-sm">{cat}</span>
                     </label>
@@ -275,61 +293,89 @@ export default function TechOffersPage() {
 
           {/* GRID OF ITEMS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {filteredData.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <p className="text-gray-500">No tech offers found.</p>
             ) : (
-              filteredData.map((item) => (
+              paginatedData.map((item) => (
                 <Card
                   key={item.id}
                   className="overflow-hidden border-0 shadow-none hover:shadow-2xl transition-shadow duration-300"
                 >
-                  <Link
-                    key={item.id}
-                    href={`/innovation/${item.id}`}
-                  >
-                    {/* Image */}
+                  <Link href={`/innovation/${item.id}`}>
                     <div className="relative w-full h-56">
-                      {item.images && (
+                      {item.images?.[0] ? (
                         <Image
                           src={item.images[0]}
-                          alt={item.nama_inovasi}
+                          alt={item.nama_inovasi || "Inovasi"}
                           fill
                           className="object-cover"
                         />
+                      ) : (
+                        <div className="bg-gray-200 w-full h-full flex items-center justify-center">
+                          <span className="text-gray-500">No image available</span>
+                        </div>
                       )}
                     </div>
-                    {/* Header */}
+
                     <CardHeader className="py-4">
                       <CardTitle className="text-lg font-semibold text-[#1A1333]">
-                        {truncate(item.nama_inovasi, 50)}
+                        {truncate(item.nama_inovasi, 200)}
                       </CardTitle>
                     </CardHeader>
-                    {/* Content */}
+
+                    {/* CATEGORY BADGES */}
+                    <div className="px-4 pb-2 flex flex-wrap gap-2">
+                      {item.categories.map((cat) => (
+                        <span
+                          key={cat}
+                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                        >
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+
                     <CardContent>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        
-                      </h3>
-
-                      {/* Kategori Inovasi */}
-                      {/* <p className="text-sm text-gray-500 mb-2">{item.category}</p> */}
-                      {/* Overview Inovasi */}
-                      <p className="text-gray-700 text-sm">
-                        {truncate(htmlToText(item.overview), 100)}
+                      <p className="text-gray-700 text-sm text-justify">
+                        {truncate(htmlToText(item.overview), 500)}
                       </p>
-
                     </CardContent>
                   </Link>
                 </Card>
               ))
             )}
           </div>
+
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <Button
+                variant="outline"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </section>
     </main>
   );
 }
 
-// Helper
 function htmlToText(html: string) {
   if (!html) return "";
   const tmp = document.createElement("div");
