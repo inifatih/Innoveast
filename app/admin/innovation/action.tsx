@@ -4,7 +4,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createInnovation(formData: FormData) {
-
   // Ambil data umum
   const nama_inovasi = formData.get("nama_inovasi") as string;
   const asal_inovasi = formData.get("asal_inovasi") as string;
@@ -12,14 +11,14 @@ export async function createInnovation(formData: FormData) {
   const features = formData.get("features") as string;
   const potential_application = formData.get("potential_application") as string;
   const unique_value = formData.get("unique_value") as string;
-  const id_inovators = formData.getAll("id_inovator") as string[];
+  const id_inovators = formData.getAll("inovator") as string[];
 
   // Sosial media
   const tiktok_url = formData.get("tiktok_url") as string | null;
   const instagram_url = formData.get("instagram_url") as string | null;
   const youtube_url = formData.get("youtube_url") as string | null;
-  const facebook_url = formData.get("youtube_url") as string | null;
-  const web_url = formData.get("youtube_url") as string | null;
+  const facebook_url = formData.get("facebook_url") as string | null;
+  const web_url = formData.get("web_url") as string | null;
 
   // Categories sebagai string[]
   const categoryNames = formData.getAll("categories") as string[];
@@ -27,7 +26,7 @@ export async function createInnovation(formData: FormData) {
   // Multiple images
   const imageFiles = formData.getAll("images") as File[];
 
-  // 1. Insert Innovations
+  // 1. Insert Innovations (tanpa id_inovators)
   const { data: innovation, error: insertError } = await supabaseAdmin
     .from("Innovations")
     .insert({
@@ -50,21 +49,36 @@ export async function createInnovation(formData: FormData) {
 
   const innovationId = innovation.id;
 
-  // 2. Multiple Innovators
+  // 2. Insert ke pivot table InnovationInovators
+  let inovatorIds: number[] = [];
   if (id_inovators.length > 0) {
-    const pivotRows = id_inovators.map((profileId) => ({
-      innovation_id: innovationId,
-      profile_id: Number(profileId),
-    }));
+    // Ambil ID dari tabel Profiles berdasarkan nama
+    const { data: inovatorData, error: invError } = await supabaseAdmin
+      .from("Profiles")
+      .select("id")
+      .in("nama", id_inovators);
 
-    const { error: pivotError } = await supabaseAdmin
-      .from("InnovationInovators")
-      .insert(pivotRows);
+    if (invError) throw invError;
 
-    if (pivotError) throw pivotError;
+    inovatorIds = inovatorData?.map((i) => i.id) ?? [];
+
+    // Masukkan ke pivot table InnovationInovators
+    if (inovatorIds.length > 0) {
+      const pivotRows = inovatorIds.map((id_profile) => ({
+        id_innovations: innovationId,
+        id_profiles: id_profile,
+      }));
+
+      const { error: pivotError } = await supabaseAdmin
+        .from("InnovationInovators")
+        .insert(pivotRows);
+
+      if (pivotError) throw pivotError;
+    }
   }
-  
-  // 2. Ambil ID kategori dari nama
+
+
+  // 3. Ambil ID kategori dari nama
   let categoryIds: number[] = [];
   if (categoryNames.length > 0) {
     const { data: categoryData, error: catError } = await supabaseAdmin
@@ -76,7 +90,7 @@ export async function createInnovation(formData: FormData) {
     categoryIds = categoryData?.map((c) => c.id) ?? [];
   }
 
-  // 3. Insert ke tabel relasi Innovation_categories
+  // 4. Insert ke tabel relasi Innovation_categories
   if (categoryIds.length > 0) {
     const categoryRows = categoryIds.map((id_categories) => ({
       id_innovations: innovationId,
@@ -90,7 +104,7 @@ export async function createInnovation(formData: FormData) {
     if (categoryError) throw categoryError;
   }
 
-  // 4. Upload images
+  // 5. Upload images
   for (const file of imageFiles) {
     if (!file || file.size === 0) continue;
 
@@ -116,6 +130,7 @@ export async function createInnovation(formData: FormData) {
 
   return innovation;
 }
+
 
   
 

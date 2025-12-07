@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTiktok, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaFacebookF, FaGlobe, FaInstagram, FaLinkedinIn, FaTiktok, FaTwitter, FaYoutube } from "react-icons/fa";
 import { getPublicInnovations } from "../action";
 
 
@@ -57,6 +57,8 @@ interface InnovationItem {
     tiktok?: string ;
     instagram?: string ;
     youtube?: string;
+    facebook?: string;
+    web?: string;
   };
 }
 
@@ -336,6 +338,16 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
               {item.social?.tiktok && (
                 <Link href={item.social.tiktok} target="_blank">
                   <FaTiktok className="hover:text-orange-600 transition-colors" />
+                </Link>
+              )}
+              {item.social?.facebook && (
+                <Link href={item.social.facebook} target="_blank">
+                  <FaFacebookF className="hover:text-orange-600 transition-colors" />
+                </Link>
+              )}
+              {item.social?.web && (
+                <Link href={item.social.web} target="_blank">
+                  <FaGlobe className="hover:text-orange-600 transition-colors" />
                 </Link>
               )}
             </div>

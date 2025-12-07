@@ -28,13 +28,13 @@ export function CarouselComponent() {
       button: "Explore Innovators",
       link: "/innovator"
     },
-    // {
-    //   image: "/images/CaroselDepan3.jpg",
-    //   title: "WHAT'S NEXT IN INNOVATION",
-    //   desc: "Arahkan inovasi Anda ke tahap berikutnya melalui business matching dan peluang pendanaan strategis.",
-    //   button: "Discover Opportunities",
-    //   link: "/matching"
-    // }
+    {
+      image: "/images/CaroselDepan3.jpg",
+      title: "WHAT'S NEXT IN INNOVATION",
+      desc: "Arahkan inovasi Anda ke tahap berikutnya melalui business matching dan peluang pendanaan strategis.",
+      button: "Discover Opportunities",
+      link: "/matching"
+    }
   ]
 
   const quickLinks = [

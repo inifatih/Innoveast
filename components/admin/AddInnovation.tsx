@@ -9,7 +9,6 @@ import { z } from "zod";
 import { getCategories } from "@/app/admin/categories/action";
 import { createInnovation, getInovators } from "@/app/admin/innovation/action";
 
-import ReactSelect from "react-select";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
@@ -76,6 +75,7 @@ export default function AddInnovationForm() {
   }, []);
 
   const onSubmit = async (values: InnovationForm) => {
+    console.log("submit clicked")
     setLoading(true);
     setStatus("");
     try {
@@ -87,7 +87,7 @@ export default function AddInnovationForm() {
       formData.append("features", values.features);
       formData.append("potential_application", values.potential_application);
       formData.append("unique_value", values.unique_value);
-      values.inovator.forEach((inv) => formData.append("id_inovator", inv));
+      values.inovator.forEach((inv) => formData.append("inovator", inv));
 
       formData.append("tiktok_url", values.tiktok_url || "");
       formData.append("instagram_url", values.instagram_url || "");
@@ -163,28 +163,43 @@ export default function AddInnovationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Inovator</FormLabel>
-
-                  <ReactSelect
-                    isMulti
-                    options={innovators.map((p) => ({
-                      value: p.id,
-                      label: p.name,
-                    }))}
-                    value={innovators
-                      .filter((p) => field.value.includes(p.id))
-                      .map((p) => ({
-                        value: p.id,
-                        label: p.name,
-                      }))}
-                    onChange={(selected) =>
-                      field.onChange(selected.map((s) => s.value))
-                    }
-                  />
-
+                  <FormDescription className="text-gray-600 text-sm">
+                    Pilih inovator yang terlibat dalam inovasi
+                  </FormDescription>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-3 rounded bg-gray-50">
+                    {innovators.map((inv) => {
+                      const isChecked = field.value?.includes(inv.id);
+                      return (
+                        <label
+                          key={inv.id}
+                          className={`flex items-center justify-center gap-2 cursor-pointer 
+                                    rounded-md px-3 py-2 transition-colors font-semibold text-sm
+                                    ${isChecked ? "bg-orange-500 text-white" : "bg-gray-200 text-gray-800"}
+                                    hover:bg-orange-100
+                                    active:bg-orange-500 active:text-white`}
+                        >
+                          <span>{inv.name}</span>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                field.onChange([...(field.value || []), inv.id]);
+                              } else {
+                                field.onChange(field.value.filter((v) => v !== inv.id));
+                              }
+                            }}
+                          />
+                        </label>
+                      );
+                    })}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
 
             {/* Categories */}
             <FormField
@@ -365,7 +380,7 @@ export default function AddInnovationForm() {
                 name="facebook_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>YouTube URL</FormLabel>
+                    <FormLabel>Facebook URL</FormLabel>
                     <FormControl>
                       <Input className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors" {...field} />
                     </FormControl>
@@ -377,7 +392,7 @@ export default function AddInnovationForm() {
                 name="web_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>YouTube URL</FormLabel>
+                    <FormLabel>Website URL</FormLabel>
                     <FormControl>
                       <Input className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors" {...field} />
                     </FormControl>
