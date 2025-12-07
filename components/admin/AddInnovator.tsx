@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { createNewUser } from "@/app/admin/innovator/action";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -17,8 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 
 // ---- Schema Zod ----
 const FormSchema = z.object({
@@ -36,6 +36,8 @@ type FormValues = z.infer<typeof FormSchema>;
 
 export default function AddInnovator() {
   const [status, setStatus] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -98,12 +100,16 @@ export default function AddInnovator() {
                   <FormItem>
                     <FormLabel className="text-gray-800">Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="*********"
-                        className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input {...field} type={showPassword ? "text" : "password"} placeholder="••••••••" className="border border-gray-400 focus:ring-orange-400 focus:border-none rounded-md transition-colors"/>
+                        <Button type="button" className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-500" onClick={() => setShowPassword(!showPassword)}>
+                          {showPassword ? (
+                            <Eye className="h-4 w-4"/>
+                          ) : (
+                            <EyeOff className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormDescription className="text-gray-500">
                       Password minimal 6 karakter

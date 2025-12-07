@@ -38,7 +38,7 @@ export default function AboutPage() {
       </div>
 
       {/* ================== MODERN PROFESSIONAL SECTION ================= */}
-      <section className="py-20 flex justify-center">
+      <section className="py-20 justify-center hidden md:flex">
         <div className="w-11/12 max-w-6xl grid md:grid-cols-2 gap-12 items-center">
           {/* Text Left */}
           <div className={`transition-opacity duration-700 ${fade ? "opacity-100" : "opacity-0"}`}>
@@ -62,6 +62,7 @@ export default function AboutPage() {
       <section className="md:hidden py-12 px-4">
         <div className="flex flex-col gap-8">
           <div className="transition-opacity duration-700 opacity-100">
+            <h2 className="text-3xl font-bold mb-6">Tentang ORBIT Jatim</h2>
             <p className="text-gray-700 text-justify leading-relaxed whitespace-pre-line">{textContent}</p>
           </div>
           <div className="relative w-full h-[250px] rounded-xl overflow-hidden shadow-lg">
@@ -76,9 +77,9 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-20 bg-gray-50 text-center">
+      <section className="py-20 bg-gray-50 text-center mx-auto">
         <h2 className="text-3xl font-bold mb-4">Orang-Orang Kami</h2>
-        <p className="text-gray-700 max-w-3xl mx-auto text-lg text-justify leading-relaxed">
+        <p className="text-gray-700 text-lg text-center leading-relaxed">
           Tim adalah kekuatan utama kami. Mereka yang menghidupkan inovasi.
         </p>
       </section>
@@ -105,3 +106,5 @@ function TeamCard({ name, role }: { name: string; role: string }) {
     </div>
   );
 }
+
+ 

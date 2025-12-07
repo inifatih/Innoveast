@@ -133,9 +133,9 @@ export function LoginDialog({
                           <Input {...field} type={showPassword ? "text" : "password"} placeholder="••••••••" />
                           <Button type="button" className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-500" onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? (
-                              <EyeOff className="h-4 w-4"/>
+                              <Eye className="h-4 w-4"/>
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <EyeOff className="h-4 w-4" />
                             )}
                           </Button>
                         </div>
