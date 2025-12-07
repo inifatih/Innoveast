@@ -319,7 +319,7 @@ export default function TechOffersPage() {
 
                     <CardHeader className="py-4">
                       <CardTitle className="text-lg font-semibold text-[#1A1333]">
-                        {truncate(item.nama_inovasi, 200)}
+                        {item.nama_inovasi}
                       </CardTitle>
                     </CardHeader>
 
