@@ -13,7 +13,7 @@ export default function MarketplacePage() {
         {/* Hero Image Placeholder */}
         <div className="absolute inset-0 bg-gray-200">
           {/* Ganti dengan Image Next nanti */}
-          <Image src="/images/marketplace.png" alt="Innovation News Hero" fill className="object-cover" />
+          <Image src="/images/GS1.jpg" alt="Innovation News Hero" fill className="object-cover" />
         </div>
 
         {/* Overlay */}
@@ -47,7 +47,14 @@ export default function MarketplacePage() {
               for implementation and commercialization.
             </p>
           </div>
-          <div className="mt-4 h-36 bg-gray-200 rounded-lg" />
+          <div className="mt-4 h-36 bg-gray-200 rounded-lg relative overflow-hidden">
+            <Image
+              src="/images/GS1.jpg"
+              alt="gambar1"
+              fill
+              className="object-cover"
+            />
+          </div>
           <a href="/innovation" className="mt-4 text-orange-600 text-sm underline inline-block">
             View more
           </a>
@@ -64,7 +71,14 @@ export default function MarketplacePage() {
               innovation needs through our smart matching system.
             </p>
           </div>
-          <div className="mt-4 h-36 bg-gray-200 rounded-lg" />
+          <div className="mt-4 h-36 bg-gray-200 rounded-lg relative overflow-hidden">
+            <Image
+              src="/images/GS2.jpg"
+              alt="gambar1"
+              fill
+              className="object-cover"
+            />
+          </div>
           <a href="/matching" className="mt-4 text-orange-600 text-sm underline inline-block">
             View more
           </a>
@@ -81,7 +95,14 @@ export default function MarketplacePage() {
               your innovation projects.
             </p>
           </div>
-          <div className="mt-4 h-36 bg-gray-200 rounded-lg" />
+          <div className="mt-4 h-36 bg-gray-200 rounded-lg relative overflow-hidden">
+            <Image
+              src="/images/GS3.jpg"
+              alt="gambar1"
+              fill
+              className="object-cover"
+            />
+          </div>
           <a href="funding" className="mt-4 text-orange-600 text-sm underline inline-block">
             View more
           </a>

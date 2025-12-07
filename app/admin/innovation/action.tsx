@@ -12,12 +12,14 @@ export async function createInnovation(formData: FormData) {
   const features = formData.get("features") as string;
   const potential_application = formData.get("potential_application") as string;
   const unique_value = formData.get("unique_value") as string;
-  const id_inovator = formData.get("id_inovator") as string;
+  const id_inovators = formData.getAll("id_inovator") as string[];
 
   // Sosial media
   const tiktok_url = formData.get("tiktok_url") as string | null;
   const instagram_url = formData.get("instagram_url") as string | null;
   const youtube_url = formData.get("youtube_url") as string | null;
+  const facebook_url = formData.get("youtube_url") as string | null;
+  const web_url = formData.get("youtube_url") as string | null;
 
   // Categories sebagai string[]
   const categoryNames = formData.getAll("categories") as string[];
@@ -35,10 +37,11 @@ export async function createInnovation(formData: FormData) {
       features,
       potential_application,
       unique_value,
-      id_inovator,
       tiktok_url,
       instagram_url,
       youtube_url,
+      facebook_url,
+      web_url,
     })
     .select()
     .single();
@@ -47,6 +50,20 @@ export async function createInnovation(formData: FormData) {
 
   const innovationId = innovation.id;
 
+  // 2. Multiple Innovators
+  if (id_inovators.length > 0) {
+    const pivotRows = id_inovators.map((profileId) => ({
+      innovation_id: innovationId,
+      profile_id: Number(profileId),
+    }));
+
+    const { error: pivotError } = await supabaseAdmin
+      .from("InnovationInovators")
+      .insert(pivotRows);
+
+    if (pivotError) throw pivotError;
+  }
+  
   // 2. Ambil ID kategori dari nama
   let categoryIds: number[] = [];
   if (categoryNames.length > 0) {
@@ -100,6 +117,8 @@ export async function createInnovation(formData: FormData) {
   return innovation;
 }
 
+  
+
 
 // GET INNOVATORS FROM TABLE PROFILES WHERE IS_ADMIN == FALSE
 export async function getInovators() {
@@ -132,6 +151,18 @@ type InnovationCategoryJoin = {
   Categories: CategoryItem | CategoryItem[] | null;
 };
 
+type ProfileLite = {
+  id: number | null;
+  nama: string | null;
+};
+
+type Innovator = ProfileLite;
+
+type InnovationInnovatorsJoin = {
+  Profiles: ProfileLite[] | null;
+};
+
+
 export async function getAllInnovations() {
   const supabase = await createClient();
 
@@ -149,7 +180,12 @@ export async function getAllInnovations() {
       tiktok_url,
       instagram_url,
       youtube_url,
-      Profiles(id, nama),
+      facebook_url,
+      web_url,
+
+      Innovation_innovators (
+        Profiles ( id, nama )
+      ),
 
       Innovation_categories (
         Categories(nama_kategori)
@@ -158,7 +194,6 @@ export async function getAllInnovations() {
       Innovation_images(image_path)
     `)
   .order("created_at", { ascending: false });
-
 
   if (error) throw error;
 
@@ -178,7 +213,14 @@ export async function getAllInnovations() {
         .map((cat) => cat.nama_kategori)
         .filter((name) => Boolean(name)) || [];
         
-    const innovator = Array.isArray(item.Profiles) ? item.Profiles[0] : item.Profiles;
+    const innovators: Innovator[] =
+      (item.Innovation_innovators ?? [])
+        .flatMap((join: InnovationInnovatorsJoin) =>
+          join?.Profiles?.map((p) => ({
+            id: p.id,
+            nama: p.nama,
+          })) ?? []
+        );
 
     return {
       id: item.id,
@@ -189,16 +231,13 @@ export async function getAllInnovations() {
       unique_value: item.unique_value,
       asal_inovasi: item.asal_inovasi,
       created_at: item.created_at,
-
-      innovator: {
-        id: innovator?.id || null,
-        nama: innovator?.nama || null,
-      },
-
+      innovators,
       social: {
         tiktok: item.tiktok_url,
         instagram: item.instagram_url,
         youtube: item.youtube_url,
+        facebook: item.facebook_url,
+        web: item.web_url,
       },
 
       images,
@@ -238,7 +277,11 @@ export async function getInnovationByIdForUpdate(id: number) {
       tiktok_url,
       instagram_url,
       youtube_url,
-      Profiles(id, nama),
+      facebook_url,
+      web_url,
+      Innovation_innovators (
+        Profiles ( id, nama )
+      ),
 
       Innovation_categories (
         Categories(nama_kategori)
@@ -270,7 +313,18 @@ export async function getInnovationByIdForUpdate(id: number) {
       .filter(Boolean) || [];
 
   // Ambil innovator
-  const innovator = Array.isArray(data.Profiles) ? data.Profiles[0] : data.Profiles;
+  const innovators =
+    (data.Innovation_innovators as InnovationInnovatorsJoin[] | null)
+      ?.flatMap((join) => {
+        const profs = join?.Profiles;
+        if (!profs) return [];
+        return Array.isArray(profs) ? profs : [profs];
+      })
+      .map((p) => ({
+        id: p.id,
+        nama: p.nama,
+      })) || [];
+
 
   return {
     id: data.id,
@@ -282,15 +336,14 @@ export async function getInnovationByIdForUpdate(id: number) {
     asal_inovasi: data.asal_inovasi,
     created_at: data.created_at,
 
-    innovator: {
-      id: innovator?.id || null,
-      nama: innovator?.nama || null,
-    },
+    innovators,
 
     social: {
       tiktok: data.tiktok_url,
       instagram: data.instagram_url,
       youtube: data.youtube_url,
+      facebook: data.facebook_url,
+      web: data.web_url,
     },
 
     images,
@@ -310,12 +363,15 @@ export async function updateInnovation(id: number, formData: FormData) {
   const features = formData.get("features") as string;
   const potential_application = formData.get("potential_application") as string;
   const unique_value = formData.get("unique_value") as string;
-  const id_inovator = formData.get("id_inovator") as string;
+  // Id_inovator sebagai string[]
+  const id_inovator = formData.getAll("id_inovator") as string[];
 
   // Sosial media
   const tiktok_url = formData.get("tiktok_url") as string | null;
   const instagram_url = formData.get("instagram_url") as string | null;
   const youtube_url = formData.get("youtube_url") as string | null;
+  const facebook_url = formData.get("facebook_url") as string | null;
+  const web_url = formData.get("web_url") as string | null;
 
   // Categories sebagai string[]
   const categoryNames = formData.getAll("categories") as string[];
@@ -333,10 +389,11 @@ export async function updateInnovation(id: number, formData: FormData) {
       features,
       potential_application,
       unique_value,
-      id_inovator,
       tiktok_url,
       instagram_url,
       youtube_url,
+      facebook_url,
+      web_url,
     })
     .eq("id", id)
     .select()
@@ -376,6 +433,29 @@ export async function updateInnovation(id: number, formData: FormData) {
       .insert(categoryRows);
 
     if (categoryInsertError) throw categoryInsertError;
+  }
+
+  // Update inovator multiple
+  // Hapus dulu semua relasi innovator lama
+  const { error: deleteInvError } = await supabaseAdmin
+    .from("Innovation_innovators")
+    .delete()
+    .eq("innovation_id", innovationId);
+
+  if (deleteInvError) throw deleteInvError;
+
+  // Insert ulang dari array id_inovator
+  if (id_inovator.length > 0) {
+    const invRows = id_inovator.map((profile_id) => ({
+      innovation_id: innovationId,
+      profile_id,
+    }));
+
+    const { error: insertInvError } = await supabaseAdmin
+      .from("Innovation_innovators")
+      .insert(invRows);
+
+    if (insertInvError) throw insertInvError;
   }
 
   // 3. Upload images baru (opsional, bisa hapus lama jika ingin)

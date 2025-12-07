@@ -22,6 +22,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+type Innovator = {
+  id: number | null;
+  nama: string | null;
+};
 
 interface InnovationItem {
   id: number;
@@ -32,11 +36,8 @@ interface InnovationItem {
   unique_value: string;
   asal_inovasi: string;
   created_at: string;
-  // inovator dari Profiles Table
-  innovator: {
-    id: string | null;
-    nama: string | null;
-  };
+  // inovator array dari Profiles Table
+  innovators: Innovator[];
   // kumpulan image url dari array
   images: string[];
   // kategori lebih dari 1
@@ -46,6 +47,8 @@ interface InnovationItem {
     tiktok: string | null;
     instagram: string | null;
     youtube: string | null;
+    facebook: string | null;
+    web: string | null;
   };
 }
 
@@ -150,7 +153,18 @@ export default function TableInnovation() {
                   <TableCell className="text-gray-700">{htmlToText(item.potential_application) ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">{htmlToText(item.unique_value) ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
-                  <TableCell className="text-gray-700">{item.innovator?.nama ?? "—"}</TableCell>
+                  <TableCell className="text-gray-800">
+                    {item.innovators && item.innovators.length > 0 ? (
+                      <ul className="list-disc list-inside space-y-0.5">
+                        {item.innovators.map((inv, idx) => (
+                          <li key={idx}>{inv.nama}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+
                   <TableCell className="text-gray-700"><SocialCell social={item.social}/></TableCell>
                   <TableCell className="text-gray-600">
                     {item.created_at
@@ -332,8 +346,6 @@ export function ImageCell({ images = [], alt = "Gambar" }: ImageCellProps) {
   );
 }
 
-
-import router from "next/router";
 import type { ComponentType, SVGProps } from "react";
 import { FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
 import { Button } from "../ui/button";

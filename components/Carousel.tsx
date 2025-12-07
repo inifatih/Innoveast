@@ -15,26 +15,26 @@ export function CarouselComponent() {
 
   const slides = [
     {
-      image: "/images/Pesona1.mp4",
+      image: "/images/HD1.mp4",
       title: "Discover How to Become an Innovator with BRIDA",
       desc: "Jadilah bagian dari innovator kami, pelajari cara mendaftarkan inovasi, dan bangun kolaborasi dengan industri maupun para innovator.",
       button: "Learn How",
       link: "/contact"
     },
     {
-      image: "/images/Pesona2.mp4",
+      image: "/images/HD2.mp4",
       title: "MEET LEADING INNOVATORS",
       desc: "Jelajahi ide dan teknologi terbaru dari para innovator terbaik untuk mendukung pertumbuhan bisnis Anda.",
       button: "Explore Innovators",
       link: "/innovator"
     },
-    {
-      image: "/images/CaroselDepan3.jpg",
-      title: "WHAT'S NEXT IN INNOVATION",
-      desc: "Arahkan inovasi Anda ke tahap berikutnya melalui business matching dan peluang pendanaan strategis.",
-      button: "Discover Opportunities",
-      link: "/matching"
-    }
+    // {
+    //   image: "/images/CaroselDepan3.jpg",
+    //   title: "WHAT'S NEXT IN INNOVATION",
+    //   desc: "Arahkan inovasi Anda ke tahap berikutnya melalui business matching dan peluang pendanaan strategis.",
+    //   button: "Discover Opportunities",
+    //   link: "/matching"
+    // }
   ]
 
   const quickLinks = [

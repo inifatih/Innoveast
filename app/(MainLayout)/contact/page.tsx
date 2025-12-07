@@ -84,7 +84,7 @@ export default function ContactPage() {
       {/* Cover */}
       <section className="relative w-full h-[300px] sm:h-[400px] overflow-hidden shadow-2xl border-b-gray-600">
         <Image
-          src="/images/Acer1.jpg"
+          src="/images/HC1.jpg"
           alt="Innovation Cover"
           fill
           className="object-cover brightness-75"

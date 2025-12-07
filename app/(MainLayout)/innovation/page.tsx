@@ -131,7 +131,7 @@ export default function TechOffersPage() {
       {/* HERO */}
       <section className="relative w-full h-[300px] sm:h-[400px] overflow-hidden">
         <Image
-          src="/images/Acer1.jpg"
+          src="/images/HAI1.jpg"
           alt="Innovation Cover"
           fill
           className="object-cover brightness-75"
@@ -303,9 +303,9 @@ export default function TechOffersPage() {
                 >
                   <Link href={`/innovation/${item.id}`}>
                     <div className="relative w-full h-56">
-                      {item.images?.[0] ? (
+                      {item.images?.[0] ?  (
                         <Image
-                          src={item.images[0]}
+                          src={item.images[0] ?? "/images/defaultImage.jpg"}
                           alt={item.nama_inovasi || "Inovasi"}
                           fill
                           className="object-cover"

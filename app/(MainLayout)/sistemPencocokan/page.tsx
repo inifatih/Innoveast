@@ -253,7 +253,7 @@ export default function SistemPencocokanPage() {
                 {item.images && item.images[0] && item.images[0].trim() !== "" && (
                   <div className="mt-4 relative w-full h-40 rounded-xl overflow-hidden">
                     <Image
-                      src={item.images[0]}
+                      src={item.images[0] ?? "/images/defaultImage.jpg"}
                       alt={item.nama_inovasi}
                       fill
                       className="object-cover"

@@ -124,7 +124,7 @@ export default function InnovationDetailPage() {
       <section className="relative w-full h-80 sm:h-[420px]">
         {item.images && (
           <Image
-            src={item.images[0] ?? "/placeholder.png"}
+            src={item.images[0] ?? "/images/defaultImage.jpg"}
             alt={item.nama_inovasi}
             fill
             className="object-cover"
@@ -160,7 +160,7 @@ export default function InnovationDetailPage() {
                     <CarouselItem key={index}>
                       <div className="relative w-full h-60 sm:h-72 lg:h-80">
                         <Image
-                          src={img ?? "/placeholder.png"}
+                          src={img ?? "/images/defaultImage.jpg"}
                           alt={`Image ${index}`}
                           className="object-cover rounded-xl"
                           fill
@@ -266,7 +266,11 @@ export function DetailBlock({ title, html }: DetailBlockProps) {
 
       {/* HTML hanya untuk konten */}
       <div
-        className="prose prose-sm max-w-none"
+        className="
+          prose prose-sm max-w-none
+          prose-li:ml-4
+          prose-ul:list-disc
+          prose-ol:list-decimal"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
@@ -279,7 +283,11 @@ function DetailList({ title, html }: DetailListProps) {
     <div>
       <h2 className="text-xl font-bold text-orange-600 border-l-4 border-orange-200 pl-4 mb-2">{title}</h2>
       <div
-        className="prose prose-sm max-w-none"
+        className="
+          prose prose-sm max-w-none
+          prose-li:ml-4
+          prose-ul:list-disc
+          prose-ol:list-decimal"
         dangerouslySetInnerHTML={{ __html: html }}/>
     </div>
   );
@@ -371,7 +379,7 @@ function RelatedItems({ related, router }: { related: InnovationItem[]; router: 
             <div className="relative w-full h-56 overflow-hidden rounded-t-xl group">
               {rel.images && (
               <Image
-                src={rel.images[0] ?? "/placeholder.png"} // sesuaikan field API
+                src={rel.images[0] ?? "/images/defaultImage.jpg"}
                 alt={rel.nama_inovasi}
                 fill
                 className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"

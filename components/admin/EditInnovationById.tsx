@@ -9,11 +9,11 @@ import { z } from "zod";
 import { getCategories } from "@/app/admin/categories/action";
 import { getInnovationByIdForUpdate, getInovators, updateInnovation } from "@/app/admin/innovation/action";
 
+import ReactSelect from "react-select";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { TiptapEditor } from "./TipTapEditor";
 
 const InnovationSchema = z.object({
@@ -23,12 +23,14 @@ const InnovationSchema = z.object({
   features: z.string().min(1),
   potential_application: z.string().min(1),
   unique_value: z.string().min(1),
-  inovator: z.string().min(1),
+  inovator: z.array(z.string()).min(1),
   categories: z.array(z.string()).min(1),
   images: z.array(z.any()).optional(),
   tiktok_url: z.string().optional(),
   instagram_url: z.string().optional(),
   youtube_url: z.string().optional(),
+  facebook_url: z.string().optional(),
+  web_url: z.string().optional(),
 });
 
 type InnovationForm = z.infer<typeof InnovationSchema>;
@@ -50,12 +52,14 @@ export default function EditInnovationForm({ id }: { id: number}) {
       features: "",
       potential_application: "",
       unique_value: "",
-      inovator: "",
+      inovator: [],
       categories: [],
       images: [] as File[],
       tiktok_url: "",
       instagram_url: "",
       youtube_url: "",
+      facebook_url: "",
+      web_url: "",
     },
   });
 
@@ -87,12 +91,14 @@ export default function EditInnovationForm({ id }: { id: number}) {
         features: innovationDetail.features ?? "",
         potential_application: innovationDetail.potential_application ?? "",
         unique_value: innovationDetail.unique_value ?? "",
-        inovator: innovationDetail.innovator?.id ?? "",
+        inovator: innovationDetail.innovators?.map(inv => String(inv.id)) ?? [],
         categories: safeCategories, // array string, akan otomatis checked di form
         images: [], // file input tetap kosong
         tiktok_url: innovationDetail.social?.tiktok ?? "",
         instagram_url: innovationDetail.social?.instagram ?? "",
         youtube_url: innovationDetail.social?.youtube ?? "",
+        facebook_url: innovationDetail.social?.facebook ?? "",
+        web_url: innovationDetail.social?.web ?? "",
       });
 
       // 6. Set preview images dari data lama
@@ -125,11 +131,13 @@ export default function EditInnovationForm({ id }: { id: number}) {
       formData.append("features", values.features);
       formData.append("potential_application", values.potential_application);
       formData.append("unique_value", values.unique_value);
-      formData.append("id_inovator", values.inovator);
+      values.inovator.forEach((inv) => formData.append("id_inovator", inv));
 
       formData.append("tiktok_url", values.tiktok_url || "");
       formData.append("instagram_url", values.instagram_url || "");
       formData.append("youtube_url", values.youtube_url || "");
+      formData.append("facebook_url", values.facebook_url || "");
+      formData.append("web_url", values.web_url || "");
 
       values.categories.forEach((cat) => formData.append("categories", cat));
 
@@ -200,33 +208,29 @@ export default function EditInnovationForm({ id }: { id: number}) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Inovator</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih inovator" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white">
-                      {innovators.map((inv) => (
-                        <SelectItem
-                          key={inv.id}
-                          value={String(inv.id)}
-                          className={`
-                            text-gray-700
-                            focus:bg-orange-400 focus:text-white
-                            data-highlighted:bg-orange-400 data-highlighted:text-white
-                            ${field.value === String(inv.id) ? "bg-orange-500 text-white" : ""}
-                          `}
-                        >
-                          {inv.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                  <ReactSelect
+                    isMulti
+                    options={innovators.map((p) => ({
+                      value: p.id,
+                      label: p.name,
+                    }))}
+                    value={innovators
+                      .filter((p) => field.value?.includes(p.id))
+                      .map((p) => ({
+                        value: p.id,
+                        label: p.name,
+                      }))}
+                    onChange={(selected) =>
+                      field.onChange(selected?.map((s) => s.value) ?? [])
+                    }
+                  />
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
 
             {/* Categories */}
             <FormField
@@ -366,6 +370,30 @@ export default function EditInnovationForm({ id }: { id: number}) {
               <FormField
                 control={form.control}
                 name="youtube_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>YouTube URL</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="facebook_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>YouTube URL</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="web_url"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>YouTube URL</FormLabel>
