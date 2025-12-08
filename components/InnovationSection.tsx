@@ -97,7 +97,7 @@ export default function InnovationSection() {
                     <div className="relative w-full h-56">
                       {item.images && (
                         <Image
-                          src={item.images[0] ?? "/images/defaultImage.jpg"}
+                          src={item.images[0] ?? "/images/defaultImage.png"}
                           alt={item.nama_inovasi}
                           fill
                           className="object-cover"

@@ -162,7 +162,7 @@ export default function InnovationDetailPage() {
                     <CarouselItem key={index}>
                       <div className="relative w-full h-60 sm:h-72 lg:h-80">
                         <Image
-                          src={img ?? "/images/defaultImage.jpg"}
+                          src={img ?? "/images/defaultImage.png"}
                           alt={`Image ${index}`}
                           className="object-cover rounded-xl"
                           fill
@@ -391,12 +391,12 @@ function RelatedItems({ related, router }: { related: InnovationItem[]; router: 
           >
             <div className="relative w-full h-56 overflow-hidden rounded-t-xl group">
               {rel.images && (
-              <Image
-                src={rel.images[0] ?? "/images/defaultImage.jpg"}
-                alt={rel.nama_inovasi}
-                fill
-                className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
-              />
+                <Image
+                  src={rel.images[0] ?? "/images/defaultImage.png"}
+                  alt={rel.nama_inovasi}
+                  fill
+                  className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
+                />
               )}
               
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-700"></div>

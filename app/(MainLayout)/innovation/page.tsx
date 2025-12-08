@@ -303,17 +303,13 @@ export default function TechOffersPage() {
                 >
                   <Link href={`/innovation/${item.id}`}>
                     <div className="relative w-full h-56">
-                      {item.images?.[0] ?  (
+                       {item.images && (
                         <Image
-                          src={item.images[0] ?? "/images/defaultImage.jpg"}
-                          alt={item.nama_inovasi || "Inovasi"}
+                          src={item.images[0] ?? "/images/defaultImage.png"}
+                          alt={item.nama_inovasi}
                           fill
                           className="object-cover"
                         />
-                      ) : (
-                        <div className="bg-gray-200 w-full h-full flex items-center justify-center">
-                          <span className="text-gray-500">No image available</span>
-                        </div>
                       )}
                     </div>
 
