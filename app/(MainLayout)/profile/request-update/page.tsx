@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 
-import { deleteInnovationById, getAllInnovations } from "@/app/admin/innovation/action";
+import { getUserInnovations } from "@/app/(MainLayout)/profile/request-update/action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -60,7 +60,7 @@ export default function TableInnovation() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const innovations = await getAllInnovations();
+      const innovations = await getUserInnovations();
       setData(innovations);
     } catch (err) {
       console.error("Error fetching innovations:", err);
@@ -76,25 +76,11 @@ export default function TableInnovation() {
 
   const handleEdit = (id: number) => {
     console.log("Edit ID:", id);
-    router.push(`/admin/innovation/${id}`);
-  };
-
-  // Dialog untuk konfirmasi
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus inovasi ini?")) return;
-    try {
-      await deleteInnovationById(id); // sesuaikan dengan fungsi delete di action
-      fetchData(); // refresh data setelah delete
-    } catch (err) {
-      console.error("Error deleting innovation:", err);
-    }
+    router.push(`/profile/request-update/${id}`);
   };
 
   return (
-    <Card className="w-full border-gray-200 bg-white shadow-xl rounded-xl mt-6">
+    <Card className="w-full mx-28 border-gray-200 bg-white shadow-xl rounded-xl mt-6">
       <CardHeader className="bg-orange-50 shadow-sm">
         <CardTitle className="text-orange-600 text-xl font-semibold">
           Daftar Inovasi
@@ -135,8 +121,8 @@ export default function TableInnovation() {
                   </TableCell>
 
 
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">{item.nama_inovasi}</TableCell>
-                  <TableCell className="text-gray-700">
+                  <TableCell className="text-gray-800">{item.nama_inovasi}</TableCell>
+                  <TableCell className="text-gray-800">
                     {item.categories && item.categories.length > 0 ? (
                       <ul className="list-disc list-inside space-y-0.5">
                         {item.categories.map((cat, idx) => (
@@ -147,7 +133,7 @@ export default function TableInnovation() {
                       "—"
                     )}
                   </TableCell>                  
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">
+                  <TableCell className="text-gray-700">
                   <div
     dangerouslySetInnerHTML={{ __html: item.overview ?? "—" }}
     style={{
@@ -157,7 +143,7 @@ export default function TableInnovation() {
     }}
   />
                   </TableCell>
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">
+                  <TableCell className="text-gray-700">
                                      <div
     dangerouslySetInnerHTML={{ __html: item.features ?? "—" }}
     style={{
@@ -167,7 +153,7 @@ export default function TableInnovation() {
     }}
   />
                   </TableCell>
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">
+                  <TableCell className="text-gray-700">
                                      <div
     dangerouslySetInnerHTML={{ __html: item.potential_application ?? "—" }}
     style={{
@@ -177,7 +163,7 @@ export default function TableInnovation() {
     }}
   />
                   </TableCell>
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">
+                  <TableCell className="text-gray-700">
                                     <div
     dangerouslySetInnerHTML={{ __html: item.unique_value?? "—" }}
     style={{
@@ -187,8 +173,8 @@ export default function TableInnovation() {
     }}
   />
                   </TableCell>
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
-                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">{item.innovator?.nama ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
+                  <TableCell className="text-gray-700">{item.innovator?.nama ?? "—"}</TableCell>
                   <TableCell className="text-gray-700"><SocialCell social={item.social}/></TableCell>
                   <TableCell className="text-gray-600">
                     {item.created_at
@@ -203,16 +189,7 @@ export default function TableInnovation() {
                       onClick={() => handleEdit(item.id)}
                       className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setDeleteId(item.id);
-                        setIsDialogOpen(true);
-                      }}
-                      className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
-                    >
-                      Delete
+                      Ajukan Perubahan Data
                     </Button>
                   </TableCell>             
                 </TableRow>
@@ -221,46 +198,6 @@ export default function TableInnovation() {
           </Table>
         )}
       </CardContent>
-      {/* Dialog konfirmasi delete */}
-      {isDialogOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="max-w-md bg-white rounded-2xl shadow-2xl p-6">
-            {/* konten dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent className="max-w-md bg-white shadow-2xl border-0 rounded-2xl">
-                <DialogHeader>
-                  <DialogTitle>Konfirmasi Hapus</DialogTitle>
-                </DialogHeader>
-
-                <p className="text-gray-700 my-4">
-                  Apakah Anda yakin ingin menghapus inovasi ini? Tindakan ini tidak dapat dibatalkan.
-                </p>
-
-                <DialogFooter className="flex justify-end gap-2 w-full">
-                  <Button
-                    className="rounded-xl h-10 border-none text-white bg-blue-600 hover:bg-amber-200 hover:cursor-pointer px-4"
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Batal
-                  </Button>
-                  <Button
-                    className="rounded-xl h-10 bg-red-600 hover:bg-amber-200 hover:cursor-pointer px-4"
-                    variant="destructive"
-                    onClick={async () => {
-                      if (!deleteId) return;
-                      await handleDelete(deleteId);
-                      setIsDialogOpen(false);
-                    }}
-                  >
-                    Hapus
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      )}
     </Card>
   );
 }
@@ -370,9 +307,9 @@ export function ImageCell({ images = [], alt = "Gambar" }: ImageCellProps) {
   );
 }
 
+import { Button } from "@/components/ui/button";
 import type { ComponentType, SVGProps } from "react";
 import { FaFacebook, FaGlobe, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
-import { Button } from "../ui/button";
 
 
 interface SocialCellProps {

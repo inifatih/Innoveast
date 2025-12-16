@@ -1,5 +1,6 @@
 "use client";
 
+import ContactModal from "@/components/HubungiInovator";
 import {
   Carousel,
   CarouselContent,
@@ -162,7 +163,7 @@ export default function InnovationDetailPage() {
                     <CarouselItem key={index}>
                       <div className="relative w-full h-60 sm:h-72 lg:h-80">
                         <Image
-                          src={img ?? "/images/defaultImage.png"}
+                          src={img ?? "/images/defaultImage.jpg"}
                           alt={`Image ${index}`}
                           className="object-cover rounded-xl"
                           fill
@@ -194,7 +195,7 @@ export default function InnovationDetailPage() {
                   html={item.unique_value}
                 />
 
-                {/* BUTTON MENUJU PAGE UPDATE REQUEST */}
+                {/* BUTTON MENUJU PAGE UPDATE REQUEST
                 <div className="pt-4 border-t border-slate-200">
                   <button
                     onClick={() => router.push("/requestupdatedata")}
@@ -202,7 +203,7 @@ export default function InnovationDetailPage() {
                   >
                     Minta Ubah Data
                   </button>
-                </div>
+                </div> */}
 
                 {/* ================= SHARE BUTTONS ================= */}
                 <div className="border-t border-gray-300 mt-6 pt-4">
@@ -296,7 +297,7 @@ function DetailList({ title, html }: DetailListProps) {
   );
 }
 
-function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInstance}) {
+function Sidebar({ item }: { item: InnovationItem; router: AppRouterInstance}) {
   return (
     <aside className="space-y-6 md:sticky md:top-24">
       <div className="bg-white rounded-xl p-6 shadow-md">
@@ -354,16 +355,13 @@ function Sidebar({ item, router }: { item: InnovationItem; router: AppRouterInst
             </div>
           }
         />
-        <button
-          onClick={() => router.push("/contact")}
-          className="mt-4 w-full px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-200 hover:text-orange-600 transition-colors"
-        >
-          Hubungi Inovator
-        </button>
+        {/* BUTTON HUBUNGI INOVATOR */}
+        <ContactModal id_inovasi={item.id} id_inovator={Number(item.innovator.id)} />
       </div>
     </aside>
   );
 }
+
 
 function SidebarInfo({ label, value, badge, badgeGreen }: SidebarInfoProps) {
   return (
@@ -392,7 +390,7 @@ function RelatedItems({ related, router }: { related: InnovationItem[]; router: 
             <div className="relative w-full h-56 overflow-hidden rounded-t-xl group">
               {rel.images && (
                 <Image
-                  src={rel.images[0] ?? "/images/defaultImage.png"}
+                  src={rel.images[0] ?? "/images/defaultImage.jpg"}
                   alt={rel.nama_inovasi}
                   fill
                   className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"

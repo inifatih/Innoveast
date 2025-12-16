@@ -305,7 +305,7 @@ export default function TechOffersPage() {
                     <div className="relative w-full h-56">
                        {item.images && (
                         <Image
-                          src={item.images[0] ?? "/images/defaultImage.png"}
+                          src={item.images[0] ?? "/images/defaultImage.jpg"}
                           alt={item.nama_inovasi}
                           fill
                           className="object-cover"

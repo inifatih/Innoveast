@@ -104,7 +104,7 @@ export default function TableEvent() {
                     {item.category_event ?? "—"}
                   </TableCell>
 
-                  <TableCell className="text-gray-700">
+                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">
                     {item.deskripsi_event ?? "—"}
                   </TableCell>
 

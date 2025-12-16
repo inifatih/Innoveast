@@ -102,7 +102,7 @@ export default function TableNews() {
                     {item.category_news ?? "—"}
                   </TableCell>
 
-                  <TableCell className="text-gray-700">
+                  <TableCell className="max-w-[200px] whitespace-normal wrap-break-word text-gray-700">
                     {item.deskripsi_news ?? "—"}
                   </TableCell>
 

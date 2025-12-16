@@ -27,6 +27,7 @@ export function AdminSidebar() {
     { name: "Berita", href: "/admin/news", icon: Newspaper },
     { name: "Acara", href: "/admin/events", icon: FlagIcon },
     { name: "Kategori", href: "/admin/categories", icon: BadgeAlert },
+    { name: "Request Update", href: "/admin/request-update", icon: BadgeAlert },
   ];
 
   const handleSignOut = async () => {

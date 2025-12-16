@@ -134,3 +134,34 @@ export async function getInnovationById(id: string) {
   };
 }
 
+// ============= SEND QUESTION TO INNOVATOR =============
+interface QuestionPayload {
+  id_inovasi: number;
+  id_inovator: number;
+  nama_lengkap: string;
+  instansi: string;
+  telp: string;
+  email: string;
+  preferensi_komunikasi: string;
+  subjek: string;
+  pesan: string;
+}
+
+export async function sendQuestions(payload: QuestionPayload) {
+  const supabase = await createClient();
+  try {
+    const { data, error } = await supabase
+      .from("Questions")
+      .insert(payload)
+      .select();
+
+    if (error) throw error;
+
+    return data;
+  } catch (err: unknown) {
+      if (err instanceof Error) {
+    console.error(err.message);
+  }
+}}
+
+

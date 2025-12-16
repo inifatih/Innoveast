@@ -85,6 +85,8 @@ export default function Navbar() {
 
     // Logout berhasil → refresh halaman
     window.location.reload();
+    // Arahkan ke halaman home
+    window.location.href = "/";
   };
 
   // ===== DETECT SCROLL =====

@@ -484,10 +484,6 @@ export default function EditInnovationForm({ id }: { id: number}) {
               )}
             />
 
-
-
-
-
             {/* Submit */}
             <div className="flex gap-4 items-center">
               <Button type="submit" disabled={loading} className="rounded-xl h-10 bg-amber-600 hover:bg-amber-200 hover:cursor-pointer">
