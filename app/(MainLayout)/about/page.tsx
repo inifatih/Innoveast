@@ -12,8 +12,6 @@ export default function AboutPage() {
 2. Innovation Matching Feature: mencocokkan kebutuhan spesifik industri dengan solusi inovasi yang telah dikurasi oleh BRIDA Jawa Timur.
 3. Pusat Informasi Ekosistem Inovasi: menyediakan update event, berita terkini, dan insight perkembangan inovasi regional untuk mendukung keputusan strategis stakeholder.`;
 
-  const imageSrc = "/images/Acer1.jpg";
-
   // Auto fade effect
   useEffect(() => {
     setFade(true);

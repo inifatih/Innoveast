@@ -98,7 +98,7 @@ export default function InnovatorsPage() {
       <main>
           {/* ... Hero Section ... */}
           <section className="relative w-full h-[300px] sm:h-[400px] overflow-hidden">
-              <Image src="/images/HDI1.JPG" alt="Innovator Experts Cover" fill className="object-cover brightness-75" />
+              <Image src="/images/BappedaJATIM.jpg" alt="Innovator Experts Cover" fill className="object-cover brightness-75" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
                   <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-md">Daftar Inovator</h1>
                   <p className="text-lg sm:text-xl max-w-2xl drop-shadow-sm">
