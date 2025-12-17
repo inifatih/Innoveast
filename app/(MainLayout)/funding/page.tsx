@@ -30,7 +30,7 @@ export default function ComingSoonPage() {
 
       {/* Deskripsi */}
       <p className="text-gray-700 mb-6 max-w-xl">
-        We&aposre working hard to launch this page. Stay tuned for exciting updates coming your way!
+        We&apos;re working hard to launch this page. Stay tuned for the next update!
       </p>
 
       {/* Tombol kembali */}

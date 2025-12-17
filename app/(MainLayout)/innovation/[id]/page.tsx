@@ -269,12 +269,11 @@ export function DetailBlock({ title, html }: DetailBlockProps) {
 
       {/* HTML hanya untuk konten */}
       <div
+        className="prose prose-sm max-w-none
+           prose-ul:list-disc prose-ol:list-decimal
+           prose-li:my-1
+           prose-p:my-2"
         dangerouslySetInnerHTML={{ __html: html ?? "—" }}
-        style={{
-          paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
-          listStyleType: "initial", // ul = disc, ol = decimal
-          whiteSpace: "pre-wrap", // untuk line break
-        }}
       />
     </div>
   )
@@ -286,12 +285,11 @@ function DetailList({ title, html }: DetailListProps) {
     <div>
       <h2 className="text-xl font-bold text-orange-600 border-l-4 border-orange-200 pl-4 mb-2">{title}</h2>
       <div
+        className="prose prose-sm max-w-none
+           prose-ul:list-disc prose-ol:list-decimal
+           prose-li:my-1
+           prose-p:my-2"
         dangerouslySetInnerHTML={{ __html: html ?? "—" }}
-        style={{
-          paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
-          listStyleType: "initial", // ul = disc, ol = decimal
-          whiteSpace: "pre-wrap", // untuk line break
-        }}
       />
     </div>
   );

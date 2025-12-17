@@ -37,7 +37,7 @@ export default function InovasiMatchingPage() {
 
               <Link href="/innovation">
                 <Button variant="outline" className="border-[#C4F1F6] text-white hover:bg-white/10 px-6 py-4 rounded-lg">
-                  Daftarkan Inovasi
+                  Daftar Inovasi
                 </Button>
               </Link>
             </div>

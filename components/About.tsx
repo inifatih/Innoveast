@@ -40,23 +40,24 @@ export default function AboutSection() {
 
           <div className="space-y-6 leading-relaxed">
             <div>
-              <h3 className="font-bold text-xl mb-2">Who We Are</h3>
+              <h3 className="font-bold text-xl mb-2">What We Are</h3>
               <p className="text-justify leading-normal text-gray-700">
                 ORBIT Jatim (Organisasi Repositori dan Jembatan Inovasi Teknologi) adalah platform digital terintegrasi yang mengakselerasi komersialisasi produk inovasi dengan mempertemukan inventor, industri, investor, dan pemangku kebijakan dalam ekosistem kolaboratif yang terukur. Terdapat tiga fitur utama ORBIT Jatim, yaitu:
               </p>
+              <br></br>
 
               {/* Features List */}
               <ol className="space-y-4 list-decimal list-inside text-gray-700">
                 <li>
-                  <span className="font-semibold">Innovation Portfolio Management System:</span> 
+                  <span className="font-semibold">Innovation Portfolio Management System: </span> 
                   katalog komprehensif produk inovasi dengan dokumentasi lengkap, spesifikasi teknis, dan status IPR yang terverifikasi.
                 </li>
                 <li>
-                  <span className="font-semibold">Innovation Matching Feature:</span> 
+                  <span className="font-semibold">Innovation Matching Feature: </span> 
                   mencocokkan kebutuhan spesifik industri dengan solusi inovasi yang telah dikurasi oleh BRIDA Jawa Timur.
                 </li>
                 <li>
-                  <span className="font-semibold">Pusat Informasi Ekosistem Inovasi:</span> 
+                  <span className="font-semibold">Pusat Informasi Ekosistem Inovasi: </span> 
                   menyediakan update event, berita terkini, dan insight perkembangan inovasi regional untuk mendukung keputusan strategis stakeholder.
                 </li>
               </ol>

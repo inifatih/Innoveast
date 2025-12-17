@@ -16,7 +16,7 @@ export function CarouselComponent() {
   const slides = [
     {
       image: "/images/HD3.mp4",
-      title: "Discover How to Become an Innovator with BRIDA",
+      title: "Discover How to Become an Innovator with BRIDA Jatim",
       desc: "Jadilah bagian dari innovator kami, pelajari cara mendaftarkan inovasi, dan bangun kolaborasi dengan industri maupun para innovator.",
       button: "Learn How",
       link: "/contact"

@@ -78,7 +78,7 @@ export default function AboutPage() {
 
       {/* Team Section */}
       <section className="py-20 bg-gray-50 text-center mx-auto">
-        <h2 className="text-3xl font-bold mb-4">Orang-Orang Kami</h2>
+        <h2 className="text-3xl font-bold mb-4">Pengelola ORBIT Jatim</h2>
         <p className="text-gray-700 text-lg text-center leading-relaxed">
           Tim adalah kekuatan utama kami. Mereka yang menghidupkan inovasi.
         </p>

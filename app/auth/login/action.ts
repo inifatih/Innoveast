@@ -9,7 +9,6 @@ export async function actionSignIn({
   email: string;
   password: string;
 }) {
-  console.log("[actionSignIn] menerima:", email, password);
 
   const supabase = await createClient();
 
@@ -17,8 +16,6 @@ export async function actionSignIn({
     email,
     password,
   });
-
-  console.log("[actionSignIn] response supabase:", { data, error });
 
   if (error) {
     return {

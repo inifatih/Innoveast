@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
@@ -31,6 +32,8 @@ export default function ContactModal({ id_inovasi, id_inovator }: ContactModalPr
     e.preventDefault();
     setLoading(true);
 
+    const toastId = toast.loading("Mengirim pertanyaan...");
+
     const formData = new FormData(e.currentTarget);
 
     const payload = {
@@ -47,20 +50,23 @@ export default function ContactModal({ id_inovasi, id_inovator }: ContactModalPr
 
     try {
       await sendQuestions(payload);
-      toast.success("Pertanyaan berhasil dikirim!");
+
+      toast.success("Pertanyaan berhasil dikirim", {
+        id: toastId,
+      });
+
       e.currentTarget.reset();
       setPreferensi("Whatsapp"); // reset radio ke default
       setOpen(false);
-      window.location.reload(); // reload page setelah submit
+
     } catch (err: unknown) {
-        if (err instanceof Error) {
-      toast.error(err.message);
-    } else {
-      toast.error("Gagal mengirim pertanyaan");
-    }
+      if (err instanceof Error) {
+        toast.error(err.message, { id: toastId });
+      } else {
+        toast.error("Gagal mengirim pertanyaan", { id: toastId });
+      }
     } finally {
       setLoading(false);
-      // setOpen(false); // tutup dialog setelah submit
     }
   }
 
@@ -118,7 +124,13 @@ export default function ContactModal({ id_inovasi, id_inovator }: ContactModalPr
           <Textarea name="pesan" placeholder="Pesan pertanyaan" required />
 
           <Button type="submit" disabled={loading} className="bg-orange-500 hover:bg-orange-600 text-white">
-            {loading ? "Mengirim..." : "Kirim Pertanyaan"}
+            {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin h-4 w-4" /> Mengirim...
+                  </span>
+                ) : (
+                  "Kirim Pertanyaan"
+                )}
           </Button>
         </form>
       </DialogContent>

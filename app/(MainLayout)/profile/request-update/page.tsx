@@ -134,44 +134,42 @@ export default function TableInnovation() {
                     )}
                   </TableCell>                  
                   <TableCell className="text-gray-700">
-                  <div
-    dangerouslySetInnerHTML={{ __html: item.overview ?? "—" }}
-    style={{
-      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
-      listStyleType: "initial", // ul = disc, ol = decimal
-      whiteSpace: "pre-wrap", // untuk line break
-    }}
-  />
+                    <div
+                      className="prose prose-sm max-w-none
+                                prose-ul:list-disc prose-ol:list-decimal
+                                prose-li:ml-4"
+                      dangerouslySetInnerHTML={{ __html: item.overview ?? "—" }}
+                    />
                   </TableCell>
                   <TableCell className="text-gray-700">
-                                     <div
-    dangerouslySetInnerHTML={{ __html: item.features ?? "—" }}
-    style={{
-      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
-      listStyleType: "initial", // ul = disc, ol = decimal
-      whiteSpace: "pre-wrap", // untuk line break
-    }}
-  />
+                    <div
+                      dangerouslySetInnerHTML={{ __html: item.features ?? "—" }}
+                      style={{
+                        paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+                        listStyleType: "initial", // ul = disc, ol = decimal
+                        whiteSpace: "pre-wrap", // untuk line break
+                      }}
+                    />
                   </TableCell>
                   <TableCell className="text-gray-700">
-                                     <div
-    dangerouslySetInnerHTML={{ __html: item.potential_application ?? "—" }}
-    style={{
-      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
-      listStyleType: "initial", // ul = disc, ol = decimal
-      whiteSpace: "pre-wrap", // untuk line break
-    }}
-  />
+                    <div
+                      dangerouslySetInnerHTML={{ __html: item.potential_application ?? "—" }}
+                      style={{
+                        paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+                        listStyleType: "initial", // ul = disc, ol = decimal
+                        whiteSpace: "pre-wrap", // untuk line break
+                      }}
+                    />
                   </TableCell>
                   <TableCell className="text-gray-700">
-                                    <div
-    dangerouslySetInnerHTML={{ __html: item.unique_value?? "—" }}
-    style={{
-      paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
-      listStyleType: "initial", // ul = disc, ol = decimal
-      whiteSpace: "pre-wrap", // untuk line break
-    }}
-  />
+                    <div
+                      dangerouslySetInnerHTML={{ __html: item.unique_value?? "—" }}
+                      style={{
+                        paddingLeft: "1.5rem", // agar ul/ol terlihat menjorok
+                        listStyleType: "initial", // ul = disc, ol = decimal
+                        whiteSpace: "pre-wrap", // untuk line break
+                      }}
+                    />
                   </TableCell>
                   <TableCell className="text-gray-700">{item.asal_inovasi ?? "—"}</TableCell>
                   <TableCell className="text-gray-700">{item.innovator?.nama ?? "—"}</TableCell>

@@ -1,7 +1,7 @@
 import typography from "@tailwindcss/typography";
+import type { Config } from "tailwindcss";
 
-/** @type {import('tailwindcss').Config} */
-const config = {
+const config: Config = {
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",

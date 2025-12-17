@@ -75,7 +75,7 @@ export default function InnovationSection() {
       <div className="max-w-11/12 mx-auto">
         <h2 className="text-4xl font-bold tracking-tight text-[#1A1333] mb-12">
           <Link href="/news" className="hover:underline">
-            Inovasi Terbaru
+            Inovasi di ORBIT Jatim
           </Link>
           
         </h2>

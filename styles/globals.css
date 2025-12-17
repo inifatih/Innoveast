@@ -1,25 +1,33 @@
 @import "tailwindcss";
 
-/* --- Custom Styling untuk TipTap List --- */
+/* ================= Typography Fix (Tailwind v4) ================= */
 
-/* Menambahkan padding kiri untuk memberi ruang bagi marker */
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin: 0.25rem 0;
+}
+
+/* ================= TipTap Editor Styling ================= */
+
 .ProseMirror ul,
 .ProseMirror ol {
-    margin: 1em 0; /* Tambahkan sedikit margin vertikal */
-    padding-left: 1.5em; /* Memberi ruang bagi marker/nomor */
+  margin: 1em 0;
+  padding-left: 1.5em;
 }
 
-/* Mengaktifkan marker (poin) untuk Unordered List (ul) */
 .ProseMirror ul {
-    list-style-type: disc; /* Menggunakan bentuk cakram/poin */
+  list-style-type: disc;
 }
 
-/* Mengaktifkan numbering untuk Ordered List (ol) */
 .ProseMirror ol {
-    list-style-type: decimal; /* Menggunakan angka (1, 2, 3...) */
-}
-
-/* Memastikan elemen list (li) memiliki tampilan yang benar */
-.ProseMirror li {
-    margin-left: 0.5em; /* Sedikit indentasi tambahan (opsional) */
+  list-style-type: decimal;
 }
